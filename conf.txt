@@ -1,0 +1,7 @@
+ville < ville
+telephone : 
+-mobile < mobile
+-fax < fax
+nom < nom
+prenom < prenom
+pays < pays

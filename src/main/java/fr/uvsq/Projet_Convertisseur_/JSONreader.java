@@ -13,6 +13,8 @@ import org.json.JSONObject;
 
 public class JSONreader 
 {
+	JSONObject obj;
+
 	JSONreader(String name) 
 	{
 		BufferedReader file;
@@ -36,15 +38,15 @@ public class JSONreader
 			e.printStackTrace();
 		}
 			
-		JSONObject test = new JSONObject(str);
-		aff(test);
-		genConfFile(test);
+		obj = new JSONObject(str);
+		aff(obj);
+		genConfFile(obj);
 	
 	}
 	
 	public void genConfFile(JSONObject j)
 	{
-		String conf = genConfString(j);
+		String conf = genConfString(j,0);
 		File f = new File("conf.txt");
 		try 
 		{
@@ -60,27 +62,30 @@ public class JSONreader
 		
 	}
 	
-	public String genConfString(JSONObject j)
+	public String genConfString(JSONObject j, int depth)
 	{
 		Set<String> s = j.keySet();
 		String res = "";
+		int i;
 		
 		for(String val : s)
 		{
 			if(j.get(val) instanceof JSONArray)
 			{
-				res = res + val + " <- " + val + "\n";
-				res = res + Confsuiv(j.getJSONArray(val));
+				for(i=0; i<depth; i++) {res = res + "-";}
+				res = res + val + " : " + "\n";
+				res = res + Confsuiv(j.getJSONArray(val),depth+1);
 			}
 			else
 			{
-				res = res + val + " <- " + val + "\n";
+				for(i=0; i<depth; i++) {res = res + "-";}
+				res = res + val + " < " + val + "\n";
 			}
 		}
 		return res;
 	}
 	
-	public String Confsuiv(JSONArray j)
+	public String Confsuiv(JSONArray j, int depth)
 	{
 		int length = j.length();
 		int i;
@@ -88,7 +93,7 @@ public class JSONreader
 		for(i=0; i<length; i++)
 		{
 			JSONObject tmp = (JSONObject) j.get(i);
-			res = res + genConfString(tmp);
+			res = res + genConfString(tmp,depth);
 		}
 		return res;		
 	}
@@ -119,6 +124,11 @@ public class JSONreader
 			{
 				System.out.println(val +" : ");
 				suiv(j.getJSONArray(val));
+			}
+			else if(j.get(val) instanceof JSONObject)
+			{
+				System.out.println(val +" : ");
+				aff(j.getJSONObject(val));
 			}
 			else
 			{
