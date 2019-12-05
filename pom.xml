@@ -15,26 +15,34 @@
   </properties>
 
   <dependencies>
+  
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
-    </dependency>
+    </dependency> 
+    
+     <dependency>
+     <groupId>org.json</groupId>
+     <artifactId>json</artifactId>
+     <version>20190722</version>
+	</dependency>
+	
   </dependencies>
   
- 			 <plugin>
- 				<groupId>org.codehaus.mojo</groupId>
- 				<artifactId>findbugs-maven-plugin</artifactId>
- 				<version>3.0.4-SNAPSHOT</version>
- 				<configuration>
-					<xmlOutput>true</xmlOutput>
-				</configuration>
-			</plugin>
-			
-			
-			   <reporting>
+	 <reporting>
       <plugins>
+      
+      <plugin>
+ 		<groupId>org.codehaus.mojo</groupId>
+ 		 <artifactId>findbugs-maven-plugin</artifactId>
+ 		 <version>3.0.4-SNAPSHOT</version>
+ 		 <configuration>
+		 <xmlOutput>true</xmlOutput>
+		</configuration>
+	  </plugin>
+	  
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
@@ -47,6 +55,7 @@
             </reportSet>
           </reportSets>
         </plugin>
+        
       </plugins>
     </reporting>
   
