@@ -34,7 +34,7 @@ public class JSONreader
 			e.printStackTrace();
 		} 
 		catch (IOException e) 
-		{
+		{ 
 			e.printStackTrace();
 		}
 			
@@ -75,6 +75,12 @@ public class JSONreader
 				for(i=0; i<depth; i++) {res = res + "-";}
 				res = res + val + " : " + "\n";
 				res = res + Confsuiv(j.getJSONArray(val),depth+1);
+			}
+			else if(j.get(val) instanceof JSONObject)
+			{
+				for(i=0; i<depth; i++) {res = res + "-";}
+				res = res + val + " : " + "\n";
+				res = res + genConfString(j.getJSONObject(val), depth+1);
 			}
 			else
 			{
@@ -138,3 +144,5 @@ public class JSONreader
 	}
 	
 }
+
+
