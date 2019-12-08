@@ -101,7 +101,6 @@ public class convert
 			e.printStackTrace();
 		}
 		
-		// création de la première ligne
 		ArrayList<String> ligne1 = createLigne1(cont,l);
 		System.out.println(ligne1);
 		
@@ -119,21 +118,25 @@ public class convert
 				line[i] = line[i].replaceAll("-", "");
 				System.out.println(line[i]+ "\n--\n");
 			}
-			csv.writeNext(line);
 			
 			ArrayList<String[]> obj = new ArrayList<String[]>();
 			obj.add(line);
-			obj.add(new String[ligne1.size()]);
-			
+			//obj.add(new String[ligne1.size()]);
+		
 			Stack<String> pathObj = new Stack<String>();
-			parcours(r.getJASON(),obj,pathObj);
+			parcours(r.getJASON(),obj,pathObj,1);
 
 			for(i=0;i<obj.get(1).length;i++)
 			{
 				System.out.println(obj.get(1)[i]);
 			}
 			
-			csv.writeNext(obj.get(1));;
+			i = 0;
+			while(i<obj.size())
+			{
+				csv.writeNext(obj.get(i));
+				i++;
+			}
 			csv.close();
 		} 
 		catch (IOException e) 
@@ -142,79 +145,100 @@ public class convert
 		}
 	} 
 	
-	private static void suiv(JSONArray j, ArrayList<String[]> obj, Stack<String> pathObj)
+	private static void suiv(JSONArray j, ArrayList<String[]> obj, Stack<String> pathObj,int ligne)
 	{
 		int length = j.length();
-		int i;
+		int i,k = 0,doublon = -1;
+		int nb[] = new int[length];
+		ArrayList<JSONObject> dejaVu = new ArrayList<JSONObject>();
 		for(i=0; i<length; i++)
 		{
 			JSONObject tmp = (JSONObject) j.get(i);
-			parcours(tmp, obj,pathObj);
+			while(k<dejaVu.size() && doublon == -1)
+			{
+				if(dejaVu.get(k).keySet().equals(tmp.keySet()))
+				{
+					doublon = k;
+					System.out.println("doublon " + k);
+				}
+				k++;
+			}
+			if(doublon == -1)
+			{
+				dejaVu.add(tmp);
+				System.out.println("na "+k);
+				nb[k] = 0;
+				parcours(tmp, obj,pathObj,ligne + nb[k]);
+			}
+			else
+			{
+				nb[doublon] = nb[doublon] + 1;
+				parcours(tmp, obj,pathObj,ligne + nb[doublon]);
+				System.out.println("ne " + ligne + " " +  nb[doublon]);
+			}
+			k = 0;
+			doublon = -1;
 		}
 				
 	}
 	
-	private static void parcours(JSONObject j, ArrayList<String[]> obj, Stack<String> pathObj)
+	private static void parcours(JSONObject j, ArrayList<String[]> obj, Stack<String> pathObj, int ligne)
 	{
 		Set<String> s = j.keySet();
 		Stack<String> newpathObj = new Stack<String>();
 		newpathObj.addAll(pathObj);
-
+		System.out.println("ok");
 		for(String val : s)
 		{
 			newpathObj.add(val);
 			System.out.println(newpathObj);
 			if(j.get(val) instanceof JSONArray)
 			{
-				suiv(j.getJSONArray(val),obj,newpathObj);
+				suiv(j.getJSONArray(val),obj,newpathObj,ligne);
 			}
 			else if(j.get(val) instanceof JSONObject)
 			{
-				parcours(j.getJSONObject(val),obj,newpathObj);
+				parcours(j.getJSONObject(val),obj,newpathObj,ligne);
 			}
 			else
 			{
-				addValue(j,obj,newpathObj);
+				addValue(j,obj,newpathObj,ligne);
 			}
 			newpathObj.pop();
 		}
 	}
 	
-	private static void addValue(JSONObject j, ArrayList<String[]> obj, Stack<String> pathObj)
+	private static void addValue(JSONObject j, ArrayList<String[]> obj, Stack<String> pathObj, int ligne)
 	{
 		int i = 0;
 		int res = -1, noMatch = 0;
 		int k;
 		String[] temp = null;
-		
+		System.out.println("in");
 		while(i<obj.get(0).length && res == -1)
 		{
 			temp = obj.get(0)[i].split("_");
 			if(pathObj.size() == temp.length)
 			{
-				System.out.println("match size"+ pathObj.size() + temp.length);
 				for(k=0;k<temp.length;k++)
 				{
-					System.out.println(temp[k]+" "+pathObj.get(k));
 					if(!(temp[k].equals(pathObj.get(k))))
 					{
-						System.out.println("err "+temp[k]+" "+pathObj.get(k));
 						noMatch = 1;
 					}
-					
 				}
 				if(noMatch == 0)
 				{
-					System.out.println("match okok");
 					res = i;
-					System.out.println(res);
 				}
 				noMatch = 0;
 			}
 			i++; 
-		}
-		System.out.println(res);
-		obj.get(1)[res] = j.getString(pathObj.get(pathObj.size()-1));
-		System.out.println("ok " + obj.get(0)[res] + " " + pathObj + " "+ res +"\n");
+		}System.out.println("1");
+		while(obj.size()<ligne+1)
+		{
+			obj.add(new String[obj.get(0).length]);System.out.println("create");
+		}System.out.println("2");
+		obj.get(ligne)[res] = j.getString(pathObj.get(pathObj.size()-1));
 	}
 }

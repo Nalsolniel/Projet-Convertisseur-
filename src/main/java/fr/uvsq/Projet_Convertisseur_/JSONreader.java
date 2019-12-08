@@ -71,7 +71,6 @@ public class JSONreader
 		Set<String> s = j.keySet();
 		String res = "";
 		int i;
-		
 		for(String val : s)
 		{
 			if(j.get(val) instanceof JSONArray)
@@ -98,27 +97,31 @@ public class JSONreader
 	public String Confsuiv(JSONArray j, int depth)
 	{
 		int length = j.length();
-		int i,k = 0;
+		int i;
+		int k = 0;
+		int stop = 0;
 		ArrayList<JSONObject> dejaVu = new ArrayList<JSONObject>();
 		String res = "";
 		for(i=0; i<length; i++)
 		{
 			JSONObject tmp = (JSONObject) j.get(i);
 			JSONObject tmpVu;
-			while(k<dejaVu.size() && k != -1) 
+			while(k<dejaVu.size() && stop == 0) 
 			{
+				System.out.println("k:"+k);
 				tmpVu = dejaVu.get(k);
-				if(tmp.keySet().equals(tmpVu.keySet()))
+				if(tmp.keySet().equals(tmpVu.keySet())) 
 				{
-					k = -1;
+					stop = 1; 
 				}
+				k = k + 1;
 			}
-			if(k != -1)
+			if(stop == 0)
 			{
 				res = res + genConfString(tmp,depth);
 				dejaVu.add(tmp);
 			}
-		}
+		}System.out.println("ok");
 		return res;		
 	}
 	
@@ -139,7 +142,6 @@ public class JSONreader
 	
 	public void aff(JSONObject j)
 	{
-		int length = j.length();
 		Set<String> s = j.keySet();
 		
 		for(String val : s)
