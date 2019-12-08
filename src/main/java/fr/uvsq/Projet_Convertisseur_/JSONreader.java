@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -97,12 +98,26 @@ public class JSONreader
 	public String Confsuiv(JSONArray j, int depth)
 	{
 		int length = j.length();
-		int i;
+		int i,k = 0;
+		ArrayList<JSONObject> dejaVu = new ArrayList<JSONObject>();
 		String res = "";
 		for(i=0; i<length; i++)
 		{
 			JSONObject tmp = (JSONObject) j.get(i);
-			res = res + genConfString(tmp,depth);
+			JSONObject tmpVu;
+			while(k<dejaVu.size() && k != -1) 
+			{
+				tmpVu = dejaVu.get(k);
+				if(tmp.keySet().equals(tmpVu.keySet()))
+				{
+					k = -1;
+				}
+			}
+			if(k != -1)
+			{
+				res = res + genConfString(tmp,depth);
+				dejaVu.add(tmp);
+			}
 		}
 		return res;		
 	}

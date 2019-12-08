@@ -64,14 +64,15 @@ public class convert
 				}
 				if(res.isEmpty())
 				{
-					ligne1.add(ltemp[0].replaceAll("-", ""));
+					ligne1.add(ltemp[0]);
 				}
 				else
 				{
-					ligne1.add(res + "_" + ltemp[0].replaceAll("-", ""));
+					ligne1.add(res + "_" + ltemp[0]);
 				}
 			}
 		}
+		
 		return ligne1;
 	}
 	
@@ -115,7 +116,8 @@ public class convert
 			for(i=0;i<ligne1.size();i++)
 			{
 				line[i] = ligne1.get(i);
-				System.out.println(line[i]+ "\n\n");
+				line[i] = line[i].replaceAll("-", "");
+				System.out.println(line[i]+ "\n--\n");
 			}
 			csv.writeNext(line);
 			
@@ -123,7 +125,13 @@ public class convert
 			obj.add(line);
 			obj.add(new String[ligne1.size()]);
 			
-			parcours(r.getJASON(),obj);
+			Stack<String> pathObj = new Stack<String>();
+			parcours(r.getJASON(),obj,pathObj);
+
+			for(i=0;i<obj.get(1).length;i++)
+			{
+				System.out.println(obj.get(1)[i]);
+			}
 			
 			csv.writeNext(obj.get(1));;
 			csv.close();
@@ -134,52 +142,79 @@ public class convert
 		}
 	} 
 	
-	private static void suiv(JSONArray j, ArrayList<String[]> obj)
+	private static void suiv(JSONArray j, ArrayList<String[]> obj, Stack<String> pathObj)
 	{
 		int length = j.length();
 		int i;
 		for(i=0; i<length; i++)
 		{
 			JSONObject tmp = (JSONObject) j.get(i);
-			parcours(tmp, obj);
+			parcours(tmp, obj,pathObj);
 		}
 				
 	}
 	
-	private static void parcours(JSONObject j, ArrayList<String[]> obj)
+	private static void parcours(JSONObject j, ArrayList<String[]> obj, Stack<String> pathObj)
 	{
 		Set<String> s = j.keySet();
-		
+		Stack<String> newpathObj = new Stack<String>();
+		newpathObj.addAll(pathObj);
+
 		for(String val : s)
 		{
+			newpathObj.add(val);
+			System.out.println(newpathObj);
 			if(j.get(val) instanceof JSONArray)
 			{
-				suiv(j.getJSONArray(val),obj);
+				suiv(j.getJSONArray(val),obj,newpathObj);
 			}
 			else if(j.get(val) instanceof JSONObject)
 			{
-				parcours(j.getJSONObject(val),obj);
+				parcours(j.getJSONObject(val),obj,newpathObj);
 			}
 			else
 			{
-				addValue(j,obj,val);
+				addValue(j,obj,newpathObj);
 			}
+			newpathObj.pop();
 		}
 	}
 	
-	private static void addValue(JSONObject j, ArrayList<String[]> obj, String val)
+	private static void addValue(JSONObject j, ArrayList<String[]> obj, Stack<String> pathObj)
 	{
 		int i = 0;
-		String[] temp = obj.get(0)[0].split("_");
-		String colonne = temp[temp.length-1];
-		while(!(val.equals(colonne)) && i<obj.get(1).length-1)
+		int res = -1, noMatch = 0;
+		int k;
+		String[] temp = null;
+		
+		while(i<obj.get(0).length && res == -1)
 		{
-			i++;
 			temp = obj.get(0)[i].split("_");
-			colonne = temp[temp.length-1];
-			System.out.println(colonne + " " + val);
+			if(pathObj.size() == temp.length)
+			{
+				System.out.println("match size"+ pathObj.size() + temp.length);
+				for(k=0;k<temp.length;k++)
+				{
+					System.out.println(temp[k]+" "+pathObj.get(k));
+					if(!(temp[k].equals(pathObj.get(k))))
+					{
+						System.out.println("err "+temp[k]+" "+pathObj.get(k));
+						noMatch = 1;
+					}
+					
+				}
+				if(noMatch == 0)
+				{
+					System.out.println("match okok");
+					res = i;
+					System.out.println(res);
+				}
+				noMatch = 0;
+			}
+			i++; 
 		}
-		System.out.println("ok " + colonne + " " + val + "\n");
-		obj.get(1)[i] = j.getString(val);
+		System.out.println(res);
+		obj.get(1)[res] = j.getString(pathObj.get(pathObj.size()-1));
+		System.out.println("ok " + obj.get(0)[res] + " " + pathObj + " "+ res +"\n");
 	}
 }
