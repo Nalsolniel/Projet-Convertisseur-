@@ -44,6 +44,9 @@ public class JSONreader
 	
 	}
 	
+	public JSONObject getJASON()
+	{return obj;}
+	
 	public void genConfFile(JSONObject j)
 	{
 		String conf = genConfString(j,0);
