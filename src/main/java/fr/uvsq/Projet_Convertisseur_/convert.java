@@ -19,22 +19,15 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 public class convert  
 {
-	private static ArrayList<String> genHead(JSONreader r)
+	private static ArrayList<String> genHead(ArrayList<String> l)
 	{
-		return null;
-	}
-	
-	private static ArrayList<String> createLigne1(JSONreader r)
-	{
-		ArrayList<String> l = new ArrayList<String>();
-		ArrayList<String> ligne1 = new ArrayList<String>();
-		int i,j;
 		String[] ltemp;
-		Stack<String> in = new Stack<String>(); 
-		int NBin;
-		String res;
-		/*
-		for(i=0; i<TabRes.length; i++)
+		Stack<String> in = new Stack<String>();
+		ArrayList<String> ligne1 = new ArrayList<String>();
+		int NBin,i,j;
+		String res,str;
+		
+		for(i=0; i<l.size(); i++)
 		{System.out.println("boucle ");
 			res = "";
 			ltemp = l.get(i).split(" ");
@@ -76,20 +69,37 @@ public class convert
 					ligne1.add(res + "_" + ltemp[0]);
 				}
 			}
-		}*/
+		}
+		return ligne1;
+	}
+	
+	private static ArrayList<String> createLigne1(JSONreader r)
+	{
+		ArrayList<String> l = new ArrayList<String>();
+		int i;
+		
 		String conf = r.genConfString(r.getJASON(), 0);
 		String TabRes[] = conf.split("\n");
 		for(i=0;i<TabRes.length;i++)
 		{
 			l.add(TabRes[i]);
-			System.out.println("\n\n" + TabRes[i].split(" ")[0]);
-			
+			//System.out.println("\n\n" + TabRes[i].split(" ")[0]);
 		}
-		System.out.println(l);
-		
-		//ligne1 = gen
-		System.out.println("ress "+ ligne1);
+		ArrayList<String> ligne1 = genHead(l);
 		return ligne1;
+	}
+	
+	private static String[] supIndent(ArrayList<String> ligne1)
+	{
+		int i;
+		String[] line = new String[(ligne1.size())];
+		for(i=0;i<ligne1.size();i++)
+		{
+			line[i] = ligne1.get(i);
+			line[i] = line[i].replaceAll("-", "");
+			System.out.println(line[i]);
+		}
+		return line;
 	}
 	
 	public static void convert_JSON_CSV(JSONreader r)
@@ -103,14 +113,9 @@ public class convert
 			f.createNewFile();
 			FileWriter write = new FileWriter(f);
 			CSVWriter csv = new CSVWriter(write,CSVWriter.DEFAULT_SEPARATOR,CSVWriter.NO_QUOTE_CHARACTER,CSVWriter.DEFAULT_ESCAPE_CHARACTER,CSVWriter.DEFAULT_LINE_END);
-			String[] line = new String[(ligne1.size())];
 			int i;
-			for(i=0;i<ligne1.size();i++)
-			{
-				line[i] = ligne1.get(i);
-				line[i] = line[i].replaceAll("-", "");
-				System.out.println(line[i]);
-			}
+			
+			String[] line = supIndent(ligne1);
 			
 			ArrayList<String[]> obj = new ArrayList<String[]>();
 			obj.add(line);
@@ -118,7 +123,7 @@ public class convert
 			Stack<String> pathObj = new Stack<String>();
 			parcours(r.getJASON(),obj,pathObj,1);
 
-			//modify(obj);
+			modify(obj);
 			
 			i = 0;
 			while(i<obj.size())
@@ -140,6 +145,7 @@ public class convert
 	{
 		BufferedReader file;
 		ArrayList<String> l = new ArrayList<String>();
+		ArrayList<String[]> CSV = new ArrayList<String[]>();
 		try 
 		{
 			file = new BufferedReader(new FileReader("conf.txt"));
@@ -159,15 +165,48 @@ public class convert
 			e.printStackTrace();
 		}
 		
-		int i;
+		ArrayList<String> ligne1 = genHead(l);
+		Stack<String> chemin = new Stack<String>();
+		String[] line = supIndent(ligne1);
+		System.out.println("modify : "+ligne1);
+		CSV.add(line);
+		
+		int i,length,j;
+		int cont = 0;
+		
 		for(i=0;i<l.size();i++)
 		{
-			
+			length = l.get(i).split(" ").length;
+			if(length == 2)
+			{
+				chemin.add(l.get(i).split(" ")[0]);
+			}
+			else
+			{
+				j = 0;
+				while(l.get(i).split(" ")[0].charAt(j) == '-')
+				{
+					cont++;j++;
+				}
+				for(j=0;j<(chemin.size()-cont);j++)
+				{
+					chemin.pop();
+				}
+				//3ieme mot : ajout de la première valeur a la colonne
+				addValue(chemin,l.get(i).split(" ")[2],obj,CSV);
+				
+			}
+			cont = 0;
 		}
 		
 		return obj;
 	}
 	
+	private static void addValue(Stack<String> chemin, String val, ArrayList<String[]> obj, ArrayList<String[]> CSV) 
+	{
+		
+	}
+
 	private static void suiv(JSONArray j, ArrayList<String[]> obj, Stack<String> pathObj,int ligne)
 	{
 		int length = j.length();
@@ -179,10 +218,16 @@ public class convert
 			JSONObject tmp = (JSONObject) j.get(i);
 			while(k<dejaVu.size() && doublon == -1)
 			{
-				if(dejaVu.get(k).keySet().equals(tmp.keySet()))
+				if(tmp.keySet().containsAll(dejaVu.get(k).keySet()) || dejaVu.get(k).keySet().containsAll(tmp.keySet())) 
 				{
 					doublon = k;
-					//System.out.println("doublon " + k);
+				}
+				else
+				{
+					if(tmp.keySet().size()>dejaVu.get(k).keySet().size())
+					{
+						dejaVu.set(k, tmp);
+					}
 				}
 				k++;
 			}
@@ -265,6 +310,7 @@ public class convert
 		if(res != -1)
 		{
 			obj.get(ligne)[res] = j.getString(pathObj.get(pathObj.size()-1));
+			System.out.println(obj.get(ligne)[res]+ " " + ligne);
 		}
 		
 		//System.out.println("3");
