@@ -19,18 +19,23 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 public class convert  
 {
-	private static ArrayList<String> createLigne1(int cont, ArrayList<String> l)
+	private static ArrayList<String> genHead(JSONreader r)
 	{
+		return null;
+	}
+	
+	private static ArrayList<String> createLigne1(JSONreader r)
+	{
+		ArrayList<String> l = new ArrayList<String>();
 		ArrayList<String> ligne1 = new ArrayList<String>();
 		int i,j;
 		String[] ltemp;
 		Stack<String> in = new Stack<String>(); 
 		int NBin;
 		String res;
-		System.out.println("\n\n");
-		
-		for(i=0; i<cont; i++)
-		{
+		/*
+		for(i=0; i<TabRes.length; i++)
+		{System.out.println("boucle ");
 			res = "";
 			ltemp = l.get(i).split(" ");
 			if(ltemp.length == 2)
@@ -71,37 +76,25 @@ public class convert
 					ligne1.add(res + "_" + ltemp[0]);
 				}
 			}
+		}*/
+		String conf = r.genConfString(r.getJASON(), 0);
+		String TabRes[] = conf.split("\n");
+		for(i=0;i<TabRes.length;i++)
+		{
+			l.add(TabRes[i]);
+			System.out.println("\n\n" + TabRes[i].split(" ")[0]);
+			
 		}
+		System.out.println(l);
 		
+		//ligne1 = gen
+		System.out.println("ress "+ ligne1);
 		return ligne1;
 	}
 	
 	public static void convert_JSON_CSV(JSONreader r)
 	{
-		BufferedReader file;
-		ArrayList<String> l = new ArrayList<String>();
-		int cont = 0;
-		try 
-		{
-			file = new BufferedReader(new FileReader("conf.txt"));
-			String tmp = file.readLine();
-			while(tmp != null)
-			{
-				cont++;
-				l.add(tmp);
-				tmp = file.readLine();
-			}
-		} 
-		catch (FileNotFoundException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{ 
-			e.printStackTrace();
-		}
-		
-		ArrayList<String> ligne1 = createLigne1(cont,l);
+		ArrayList<String> ligne1 = createLigne1(r);
 		System.out.println(ligne1);
 		
 		File f = new File("retour.csv");
@@ -116,20 +109,16 @@ public class convert
 			{
 				line[i] = ligne1.get(i);
 				line[i] = line[i].replaceAll("-", "");
-				System.out.println(line[i]+ "\n--\n");
+				System.out.println(line[i]);
 			}
 			
 			ArrayList<String[]> obj = new ArrayList<String[]>();
 			obj.add(line);
-			//obj.add(new String[ligne1.size()]);
 		
 			Stack<String> pathObj = new Stack<String>();
 			parcours(r.getJASON(),obj,pathObj,1);
 
-			for(i=0;i<obj.get(1).length;i++)
-			{
-				System.out.println(obj.get(1)[i]);
-			}
+			//modify(obj);
 			
 			i = 0;
 			while(i<obj.size())
@@ -138,12 +127,46 @@ public class convert
 				i++;
 			}
 			csv.close();
+			
+
 		} 
 		catch (IOException e) 
 		{
 			e.printStackTrace();
 		}
 	} 
+	
+	private static ArrayList<String[]> modify(ArrayList<String[]> obj)
+	{
+		BufferedReader file;
+		ArrayList<String> l = new ArrayList<String>();
+		try 
+		{
+			file = new BufferedReader(new FileReader("conf.txt"));
+			String tmp = file.readLine();
+			while(tmp != null)
+			{
+				l.add(tmp);
+				tmp = file.readLine();
+			}
+		} 
+		catch (FileNotFoundException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (IOException e) 
+		{ 
+			e.printStackTrace();
+		}
+		
+		int i;
+		for(i=0;i<l.size();i++)
+		{
+			
+		}
+		
+		return obj;
+	}
 	
 	private static void suiv(JSONArray j, ArrayList<String[]> obj, Stack<String> pathObj,int ligne)
 	{
@@ -159,14 +182,14 @@ public class convert
 				if(dejaVu.get(k).keySet().equals(tmp.keySet()))
 				{
 					doublon = k;
-					System.out.println("doublon " + k);
+					//System.out.println("doublon " + k);
 				}
 				k++;
 			}
 			if(doublon == -1)
 			{
 				dejaVu.add(tmp);
-				System.out.println("na "+k);
+				//System.out.println("na "+k);
 				nb[k] = 0;
 				parcours(tmp, obj,pathObj,ligne + nb[k]);
 			}
@@ -174,7 +197,7 @@ public class convert
 			{
 				nb[doublon] = nb[doublon] + 1;
 				parcours(tmp, obj,pathObj,ligne + nb[doublon]);
-				System.out.println("ne " + ligne + " " +  nb[doublon]);
+				//System.out.println("ne " + ligne + " " +  nb[doublon]);
 			}
 			k = 0;
 			doublon = -1;
@@ -187,11 +210,11 @@ public class convert
 		Set<String> s = j.keySet();
 		Stack<String> newpathObj = new Stack<String>();
 		newpathObj.addAll(pathObj);
-		System.out.println("ok");
+		//System.out.println("ok");
 		for(String val : s)
 		{
 			newpathObj.add(val);
-			System.out.println(newpathObj);
+			//System.out.println(newpathObj);
 			if(j.get(val) instanceof JSONArray)
 			{
 				suiv(j.getJSONArray(val),obj,newpathObj,ligne);
@@ -214,7 +237,7 @@ public class convert
 		int res = -1, noMatch = 0;
 		int k;
 		String[] temp = null;
-		System.out.println("in");
+		//System.out.println("in");
 		while(i<obj.get(0).length && res == -1)
 		{
 			temp = obj.get(0)[i].split("_");
@@ -234,11 +257,16 @@ public class convert
 				noMatch = 0;
 			}
 			i++; 
-		}System.out.println("1");
+		}//System.out.println("1");
 		while(obj.size()<ligne+1)
 		{
-			obj.add(new String[obj.get(0).length]);System.out.println("create");
-		}System.out.println("2");
-		obj.get(ligne)[res] = j.getString(pathObj.get(pathObj.size()-1));
+			obj.add(new String[obj.get(0).length]);//System.out.println("create");
+		}//System.out.println("2 : ");
+		if(res != -1)
+		{
+			obj.get(ligne)[res] = j.getString(pathObj.get(pathObj.size()-1));
+		}
+		
+		//System.out.println("3");
 	}
 }

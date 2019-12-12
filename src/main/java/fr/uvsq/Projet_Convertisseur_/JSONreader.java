@@ -108,7 +108,7 @@ public class JSONreader
 			JSONObject tmpVu;
 			while(k<dejaVu.size() && stop == 0) 
 			{
-				System.out.println("k:"+k);
+				//System.out.println("k:"+k);
 				tmpVu = dejaVu.get(k);
 				if(tmp.keySet().equals(tmpVu.keySet())) 
 				{
