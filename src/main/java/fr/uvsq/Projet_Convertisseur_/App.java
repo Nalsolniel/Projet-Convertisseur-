@@ -8,6 +8,10 @@ public class App
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+    	csvReader c = new csvReader();
+    	c.reader();
+    	convertCsvJson conv = new convertCsvJson();
+    	conv.nom();
     }
+
 }
