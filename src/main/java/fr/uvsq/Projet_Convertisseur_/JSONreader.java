@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 public class JSONreader 
 {
-	JSONObject obj;
+	JSONObject j;
 
 	JSONreader(String name) 
 	{
@@ -39,16 +39,14 @@ public class JSONreader
 			e.printStackTrace();
 		}
 			
-		obj = new JSONObject(str);
-		aff(obj);
-		genConfFile(obj);
-	
+		j = new JSONObject(str);
+		aff(j);
 	}
 	
 	public JSONObject getJASON()
-	{return obj;}
+	{return j;}
 	
-	public void genConfFile(JSONObject j)
+	public void genConfFile()
 	{
 		String conf = genConfString(j,0);
 		File f = new File("conf.txt");
