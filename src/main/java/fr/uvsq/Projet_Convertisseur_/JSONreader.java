@@ -40,7 +40,6 @@ public class JSONreader
 		}
 			
 		j = new JSONObject(str);
-		aff(j);
 	}
 	
 	public JSONObject getJASON()
@@ -106,7 +105,6 @@ public class JSONreader
 			JSONObject tmpVu;
 			while(k<dejaVu.size() && stop == 0) 
 			{
-				System.out.println("k:"+tmp.keySet());
 				tmpVu = dejaVu.get(k);
 				if(tmp.keySet().containsAll(tmpVu.keySet()) || tmpVu.keySet().containsAll(tmp.keySet())) 
 				{
@@ -127,7 +125,7 @@ public class JSONreader
 				res = res + genConfString(tmp,depth);
 				dejaVu.add(tmp);
 			}
-		}System.out.println("ok");
+		}
 		return res;		
 	}
 	

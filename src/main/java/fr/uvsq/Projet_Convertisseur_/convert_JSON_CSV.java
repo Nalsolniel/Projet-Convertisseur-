@@ -118,9 +118,9 @@ public class convert_JSON_CSV
 		
 			Stack<String> pathObj = new Stack<String>();
 			parcours(r.getJASON(),pathObj,1);
-
-			CSV = modify();
 			
+			CSV = modify();
+
 			i = 0;
 			while(i<CSV.size()-1)
 			{
@@ -315,15 +315,22 @@ public class convert_JSON_CSV
 		String tmp = "";
 		int i;
 		int colonne = -1;
-		tmp = chemin.get(0);
+		if(!chemin.empty())
+		{
+			tmp = chemin.get(0);
+		}
 		for(i=1;i<chemin.size();i++)
 		{
 			tmp = tmp + "_" + chemin.get(i);
 		}
 		tmp = tmp + "_" + val;
 		tmp = tmp.replaceAll("-", "");
+		if(tmp.charAt(0)=='_')
+		{
+			tmp = tmp.replaceFirst("_", "");
+		}
 		for(i=0;i<obj.get(0).length;i++)
-		{	
+		{
 			if(tmp.equals(obj.get(0)[i]))
 			{
 				colonne = i;
@@ -360,7 +367,7 @@ public class convert_JSON_CSV
 			{
 				if(obj.get(i)[colonne] != null)
 				{
-					if(CSV.get(i)[colonneCVS] != null)
+					if(CSV.get(i)[colonneCVS] != null )
 					{
 						CSV.get(i)[colonneCVS] = CSV.get(i)[colonneCVS] + obj.get(i)[colonne];System.out.println("concat : " + CSV.get(i)[colonneCVS]);
 					}
