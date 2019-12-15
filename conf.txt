@@ -1,0 +1,7 @@
+name < name
+age < age
+isMarried < isMarried
+hobbies < hobbies
+kids : 
+-name < name
+-age < age
