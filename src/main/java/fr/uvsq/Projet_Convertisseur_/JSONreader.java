@@ -38,7 +38,6 @@ public class JSONreader
 		{ 
 			e.printStackTrace();
 		}
-			
 		j = new JSONObject(str);
 	}
 	
@@ -60,7 +59,6 @@ public class JSONreader
 		{
 			e.printStackTrace();
 		}
-		
 	}
 	
 	public String genConfString(JSONObject j, int depth)
@@ -101,29 +99,42 @@ public class JSONreader
 		String res = "";
 		for(i=0; i<length; i++)
 		{
-			JSONObject tmp = (JSONObject) j.get(i);
-			JSONObject tmpVu;
-			while(k<dejaVu.size() && stop == 0) 
+			if(j.get(i) instanceof JSONObject) 
 			{
-				tmpVu = dejaVu.get(k);
-				if(tmp.keySet().containsAll(tmpVu.keySet()) || tmpVu.keySet().containsAll(tmp.keySet())) 
+				JSONObject tmp = (JSONObject) j.get(i);
+				JSONObject tmpVu;
+				while(k<dejaVu.size() && stop == 0) 
 				{
-					stop = 1;
-				}
-				else
-				{
-					if(tmp.keySet().size()>tmpVu.keySet().size())
+					tmpVu = dejaVu.get(k);
+					if(tmp.keySet().containsAll(tmpVu.keySet()) || tmpVu.keySet().containsAll(tmp.keySet())) 
 					{
-						dejaVu.set(k, tmp);
+						stop = 1;
 					}
-				}
+					else
+					{
+						if(tmp.keySet().size()>tmpVu.keySet().size())
+						{
+							dejaVu.set(k, tmp);
+						}
+					}
 
-				k = k + 1;
+					k = k + 1;
+				}
+				if(stop == 0)
+				{
+					res = res + genConfString(tmp,depth);
+					dejaVu.add(tmp);
+				}
 			}
-			if(stop == 0)
+			else if(j.get(i) instanceof JSONArray)
 			{
-				res = res + genConfString(tmp,depth);
-				dejaVu.add(tmp);
+				System.out.println(":");
+				JSONArray tmp = j.getJSONArray(i);//System.out.println(j.get(i));
+				Confsuiv(tmp,depth);
+			}
+			else
+			{
+				System.out.println(i+"-"+j.get(i));
 			}
 		}
 		return res;		
@@ -138,8 +149,21 @@ public class JSONreader
 		int i;
 		for(i=0; i<length; i++)
 		{
-			JSONObject tmp = (JSONObject) j.get(i);
-			aff(tmp);
+			if(j.get(i) instanceof JSONObject) 
+			{
+				JSONObject tmp = (JSONObject) j.get(i);
+				aff(tmp);
+			}
+			else if(j.get(i) instanceof JSONArray)
+			{
+				System.out.println(":");
+				JSONArray tmp = j.getJSONArray(i);//System.out.println(j.get(i));
+				suiv(tmp);
+			}
+			else
+			{
+				System.out.println(i+"-"+j.get(i));
+			}
 		}
 				
 	}
