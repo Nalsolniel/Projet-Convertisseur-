@@ -1,0 +1,5 @@
+tel : 
+-mobile < mobile
+-fixe < fixe
+-fax : 
+--perso < perso
