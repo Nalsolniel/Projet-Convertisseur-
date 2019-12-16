@@ -2,7 +2,8 @@ package fr.uvsq.Projet_Convertisseur_;
 import java.io.*;
 import au.com.bytecode.opencsv.CSVReader;
 import java.util.*;
-import org.json.simple.JSONObject;
+//import org.json.simple.JSONObject;
+import org.json.*;
 
 public class convertCsvJson {
 	
@@ -190,6 +191,53 @@ public class convertCsvJson {
 			return false;
 		}
 		
+		public int positionColonne(String[] ligne,String value)
+		{
+			int colonne = 0;
+			
+			for(int i=0;i<ligne.length;i++)
+			{
+				if(ligne[i].equals(value))
+				{
+					colonne = i;
+				}
+			}
+			
+			return colonne;
+		}
+		
+		public int positionColonne(String data)
+		{
+			int colonne = 0;
+			
+			String dataConcat = concatString(data);
+			
+			
+			String[] line = null;
+			try{
+				
+				FileReader fr = new FileReader("csv.csv");
+				CSVReader reader = new CSVReader(fr);
+				
+				line = reader.readNext();
+				
+				colonne = positionColonne(line, dataConcat);
+				
+				reader.close();
+			}
+			catch(FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			catch(IOException ex)
+			{
+				ex.printStackTrace();
+			}
+			
+			
+			return colonne;
+		}
+		
 		public JSONObject gereAccumulatePourListe(JSONObject pere,int[] profondeur,String data)
 		{
 			String value = concatString(data);
@@ -211,15 +259,8 @@ public class convertCsvJson {
 				
 				ligne = reader.readNext();
 				
-				int colonne = 0;
-				
-				for(int i=0;i<ligne.length;i++)
-				{
-					if(ligne[i].equals(value))
-					{
-						colonne = i;
-					}
-				}
+				int colonne = positionColonne(ligne,value); 
+						
 				ligne = reader.readNext();
 				System.out.println();
 				System.out.println();
@@ -234,7 +275,7 @@ public class convertCsvJson {
 					
 					if(ligne[colonne].length()>=1)
 					{
-						pere.put(data, ligne[colonne]);
+						pere.accumulate(data, ligne[colonne]);
 					}
 			
 				}
@@ -262,14 +303,19 @@ public class convertCsvJson {
 				String type = typeLecture(line);
 				String data = extractDataConfig(line);
 				
-				System.out.print("je lis : ");
+				System.out.print("je lis data : ");
 				System.out.println(data);
 				System.out.println();
+				
+				System.out.print("je lis line : ");
+				System.out.println(line);
+				System.out.println();
+				
 				
 				
 				if(type == "value")
 				{
-					pere.put(data, extractDataCsv(profondeur,data));
+					pere.accumulate(data, extractDataCsv(profondeur,data));
 					try{
 						line = reader.readLine();
 						}
@@ -278,7 +324,9 @@ public class convertCsvJson {
 						e.printStackTrace();
 					}
 					
-					if(pereEstListe == true)
+//					si pere est liste ou que l'element est une liste
+					
+					if(pereEstListe == true || (estListe[positionColonne(data)]>1))
 					{
 						System.out.println("je suis une value est mon pere une liste");
 						System.out.println();
@@ -317,13 +365,13 @@ public class convertCsvJson {
 						System.out.println("je suis un objet est une liste");
 						System.out.println();
 						
-						objets.get(objets.size()-2).put(data, leNomDeLaFonction(reader,lineTransi,objets.get(objets.size()-1),profondeur,estListe,motArray,true));
+						objets.get(objets.size()-2).accumulate(data, leNomDeLaFonction(reader,lineTransi,objets.get(objets.size()-1),profondeur,estListe,motArray,true));
 					}
 					else
 					{
 						System.out.println("je suis un objet mais pas une liste");
 						System.out.println();
-						objets.get(objets.size()-2).put(data, leNomDeLaFonction(reader,lineTransi,objets.get(objets.size()-1),profondeur,estListe,motArray,false));
+						objets.get(objets.size()-2).accumulate(data, leNomDeLaFonction(reader,lineTransi,objets.get(objets.size()-1),profondeur,estListe,motArray,false));
 					}
 				}
 			}
@@ -466,33 +514,12 @@ public class convertCsvJson {
 //			Utiliser ca obliger les include et donc impossible de accuulate mais put donc warning
 		        try {
 		        	FileWriter file = new FileWriter("employees.json");
-		            file.write(all.toJSONString());
+		            file.write(all.toString(4));
 		            file.flush();
 		 
 		        } catch (IOException e) {
 		            e.printStackTrace();
 		        }
-		        
-		        
-//			JSONObject all = new JSONObject();
-//			JSONObject menuitem = new JSONObject();
-//			JSONObject popup = new JSONObject();
-//			JSONObject menu = new JSONObject();
-//			
-//			menuitem.accumulate("value", "new");
-//			menuitem.accumulate("value", "open");
-//			menuitem.accumulate("onclick", "createnew");
-//			menuitem.accumulate("onclick", "openDoc");
-//			
-//			popup.accumulate("menuitem", menuitem);
-//			
-//			menu.accumulate("id", "file");
-//			menu.accumulate("value", "File");
-//			menu.accumulate("popup", popup);
-//			
-//			all.accumulate("menu", menu);
-//			
-//			System.out.println(all);
 			
 		}
 	

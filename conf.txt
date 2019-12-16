@@ -1,7 +1,7 @@
-name < name
-age < age
-isMarried < isMarried
-hobbies < hobbies
-kids : 
--name < name
--age < age
+menu : 
+-id < id
+-values < values
+-popup : 
+--menuitem : 
+---value < value
+---onclick < onclick

@@ -111,10 +111,39 @@ public class csvReader {
 		return max;
 	}
 	
-	
-	public String[] verifMot(String[] transition)
+	public int tailleMaxPourTableauBlacklist()
 	{
-		String[] TabBlackList = new String[10];
+		int taille = 0;
+		try {
+			FileReader fr = new FileReader("csv.csv");
+			CSVReader reader = new CSVReader(fr);	
+			
+			/* On prend la premiere ligne du fichier csv */
+			
+			String[] line= reader.readNext();
+			
+			for(int i=0;i<line.length;i++)
+			{
+				taille += line[i].split("_").length;
+			}
+		
+			reader.close();
+		}
+		catch(FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		catch(IOException ex)
+		{
+			ex.printStackTrace();
+		}
+		
+		return taille;
+	}
+	
+	public String[] verifMot(String[] transition,String[] TabBlackList)
+	{
+		
 		boolean blackList = true;
 		
 		for(int i=0;i<transition.length;i++)
@@ -129,7 +158,9 @@ public class csvReader {
 			}
 			if(blackList)
 				TabBlackList[j] = transition[i];
+			blackList = true;
 		}
+		
 		return TabBlackList;
 	}
 	
@@ -173,11 +204,14 @@ public class csvReader {
 		return casePronfMin;
 	}
 	
+	
+	
 	public void ecrireMotPareilActualiserMatriceBoolean(String[] matriceATraitee,boolean[] matriceTraitee,FileWriter write)
-	{	
-		String[] blackList = new String[tailleMaxElementTableau(matriceATraitee)];
+	{
+		String[] blackList = new String[tailleMaxPourTableauBlacklist()];
 		for(int k=0;k<matriceATraitee.length;k++)
 		{
+			
 			if(matriceATraitee[k]!=null)
 			{
 				int casePronfMin = casePlusPetitElement( matriceATraitee, matriceTraitee);
@@ -210,7 +244,8 @@ public class csvReader {
 						}
 						matriceTraitee[casePronfMin] = true;
 					}
-					blackList = verifMot(transition);
+					blackList = verifMot(transition,blackList);
+					
 				}
 				catch (IOException e) 
 				{
