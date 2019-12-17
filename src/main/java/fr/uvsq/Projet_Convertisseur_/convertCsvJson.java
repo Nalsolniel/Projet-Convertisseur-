@@ -8,7 +8,8 @@ import org.json.*;
 public class convertCsvJson {
 	
 	List<String> list = new ArrayList<String>();
-	List<JSONObject> objets = new ArrayList<JSONObject>();		
+	List<JSONObject> objets = new ArrayList<JSONObject>();	
+	int[] profondeurActuel = new int[nombreElements()];
 	
 
 		public void gestionList(String data,JSONObject obj) 
@@ -204,15 +205,7 @@ public class convertCsvJson {
 		
 		public JSONObject gereAccumulatePourListe(JSONObject pere,int[] profondeur,String data)
 		{
-			String value = concatString(data);
-//			
-//			System.out.print("data :");
-//			System.out.println(data);
-//			System.out.println();
-//			
-//			System.out.print("value :");
-//			System.out.println(value);
-//			System.out.println();			
+			String value = concatString(data);		
 			
 			String[] ligne = null;
 			
@@ -259,6 +252,117 @@ public class convertCsvJson {
 			return pere;
 		}
 		
+		public void actualiseTabProfondeurActuel(String[] tabOperation)
+		{
+			
+			boolean[] estVerif = new boolean[nombreElements()];
+			
+			for(int cpt=0;cpt<estVerif.length;cpt++)
+			{
+				estVerif[cpt] = false;
+			}
+			
+			CSVReader reader = null;
+			for(int i=0;i<tabOperation.length;i+=2)
+			{
+				String value = concatString(tabOperation[i]);
+				String[] ligne = null;
+				int colonne = 0;
+				
+				try{
+					
+					FileReader fr = new FileReader("csv.csv");
+					reader = new CSVReader(fr);
+					
+				 ligne = reader.readNext();
+				 colonne = positionColonne(ligne,value);
+				 System.out.println(colonne);
+				}
+				catch(FileNotFoundException e)
+				{
+					e.printStackTrace();
+				}
+				catch(IOException ex)
+				{
+					ex.printStackTrace();
+				}
+				if(estVerif[colonne] == false )
+				{
+					estVerif[colonne] = true;
+					profondeurActuel[colonne] += 1;
+				}
+			}
+			try {
+			reader.close();
+			}
+			catch(FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			catch(IOException ex)
+			{
+				ex.printStackTrace();
+			}
+			
+		}
+		
+		public JSONObject gereAccumulatePourListe(JSONObject pere,int[] profondeur,String data,String[] tabOperation)
+		{
+			String res = null;
+			String value = concatString(data);	
+			String[] ligne = null;
+			String[] tabOperationTransition = new String[tabOperation.length];
+			for(int cpt=0;cpt<tabOperation.length;cpt++)
+			{
+				tabOperationTransition[cpt] = tabOperation[cpt];
+			}
+			
+			for(int i=0;i<profondeur.length;i++)
+			{
+				profondeurActuel[i] = 1;
+			}
+			
+			try{
+				
+				FileReader fr = new FileReader("csv.csv");
+				CSVReader reader = new CSVReader(fr);
+				
+				ligne = reader.readNext();
+				
+//				int colonne = positionColonne(ligne,value); 
+						
+//				ligne = reader.readNext();
+				
+				while((ligne = reader.readNext())!=null)
+				{
+					System.out.println();
+					System.out.println("new line");
+					res = resOperation(tabOperationTransition,profondeur);
+
+					pere.accumulate(data, res);
+					
+					for(int cpt=0;cpt<tabOperation.length;cpt++)
+					{
+						tabOperationTransition[cpt] = tabOperation[cpt];
+					}
+					actualiseTabProfondeurActuel(tabOperation);
+				}
+				
+				reader.close();
+			}
+			catch(FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			catch(IOException ex)
+			{
+				ex.printStackTrace();
+			}
+			
+			return pere;
+		}
+		
+		
 		public String[] retourneOperandesEtOperation(String line)
 		{
 //			System.out.println(line.split(" ").length);
@@ -300,13 +404,11 @@ public class convertCsvJson {
 		
 		public String operationConcatenation(String tab1,String tab2,int[] profondeur,int ope)
 		{
-			
 			if(ope == 1)	
 			{
-				tab1 = extractDataCsv(profondeur,tab1);
+				tab1 = extractDataCsvListeOperateur(profondeur,tab1);
 			}
-			tab2 = extractDataCsv(profondeur,tab2);
-			
+			tab2 = extractDataCsvListeOperateur(profondeur,tab2);
 			return tab1+tab2;
 		}
 		
@@ -314,17 +416,37 @@ public class convertCsvJson {
 		public String operationAddition(String tab1,String tab2,int[] profondeur,int ope)
 		{
 			int res = 0;
+			int val1 = 0;
+			int val2 = 0;
+			String sVal1 = tab1;
+			String sVal2 = null;
 			try{
-				String sVal1 = tab1;
 				
-				if(ope == 1)
+				
+				if(tab1.charAt(0) != '"' && tab1.charAt(tab1.length()-1) != '"')
 				{
-					sVal1 = extractDataCsv(profondeur,tab1);
+					if(ope == 1)
+					{
+						sVal1 = extractDataCsvListeOperateur(profondeur,tab1);
+					}
+					val1 = Integer.parseInt(sVal1);
 				}
-				String sVal2 = extractDataCsv(profondeur,tab2);
+				else
+				{
+					sVal1 = tab1.substring(1,tab1.length()-1);
+					val1 = Integer.parseInt(sVal1); 
+				}
+				if(tab2.charAt(0) != '"' && tab2.charAt(tab1.length()-1) != '"')
+				{
+					sVal2 = extractDataCsvListeOperateur(profondeur,tab2);
+					val2 = Integer.parseInt(sVal2);
+				}
+				else
+				{
+					sVal2 = tab2.substring(1,tab2.length()-1);
+					val2 = Integer.parseInt(sVal2); //sans les ""
+				}
 				
-				int val1 = Integer.parseInt(sVal1);
-				int val2 = Integer.parseInt(sVal2);
 				
 				res = val1 + val2;
 			}
@@ -336,6 +458,183 @@ public class convertCsvJson {
 			
 			return String.valueOf(res);
 		}
+		
+		public String operationSoustraction(String tab1,String tab2,int[] profondeur,int ope)
+		{
+			int res = 0;
+			int val1 = 0;
+			int val2 = 0;
+			String sVal1 = tab1;
+			String sVal2 = null;
+			try{
+				
+				
+				if(tab1.charAt(0) != '"' && tab1.charAt(tab1.length()-1) != '"')
+				{
+					if(ope == 1)
+					{
+						sVal1 = extractDataCsvListeOperateur(profondeur,tab1);
+					}
+					val1 = Integer.parseInt(sVal1);
+				}
+				else
+				{
+					sVal1 = tab1.substring(1,tab1.length()-1);
+					val1 = Integer.parseInt(sVal1); 
+				}
+				if(tab2.charAt(0) != '"' && tab2.charAt(tab1.length()-1) != '"')
+				{
+					sVal2 = extractDataCsvListeOperateur(profondeur,tab2);
+					val2 = Integer.parseInt(sVal2);
+				}
+				else
+				{
+					sVal2 = tab2.substring(1,tab2.length()-1);
+					val2 = Integer.parseInt(sVal2); //sans les ""
+				}
+				
+				
+				res = val1 - val2;
+			}
+			catch (NumberFormatException e)
+			{
+				System.out.println("VALEUR NON NUMERQUE");
+			}
+			
+			
+			return String.valueOf(res);
+		}
+		
+		public String operationMultiplication(String tab1,String tab2,int[] profondeur,int ope)
+		{
+			int res = 0;
+			int val1 = 0;
+			int val2 = 0;
+			String sVal1 = tab1;
+			String sVal2 = null;
+			try{
+				
+				
+				if(tab1.charAt(0) != '"' && tab1.charAt(tab1.length()-1) != '"')
+				{
+					if(ope == 1)
+					{
+						sVal1 = extractDataCsvListeOperateur(profondeur,tab1);
+					}
+					val1 = Integer.parseInt(sVal1);
+				}
+				else
+				{
+					sVal1 = tab1.substring(1,tab1.length()-1);
+					val1 = Integer.parseInt(sVal1); 
+				}
+				if(tab2.charAt(0) != '"' && tab2.charAt(tab1.length()-1) != '"')
+				{
+					sVal2 = extractDataCsvListeOperateur(profondeur,tab2);
+					val2 = Integer.parseInt(sVal2);
+				}
+				else
+				{
+					sVal2 = tab2.substring(1,tab2.length()-1);
+					val2 = Integer.parseInt(sVal2); //sans les ""
+				}
+				
+				
+				res = val1 * val2;
+			}
+			catch (NumberFormatException e)
+			{
+				System.out.println("VALEUR NON NUMERQUE");
+			}
+			
+			
+			return String.valueOf(res);
+		}
+		
+		public String operationDivision(String tab1,String tab2,int[] profondeur,int ope)
+		{
+			System.out.println(tab2.charAt(0));
+			System.out.println(tab2.charAt(tab2.length()-1));
+			int res = 0;
+			int val1 = 0;
+			int val2 = 0;
+			String sVal1 = tab1;
+			String sVal2 = null;
+			try{
+				
+				
+				if(tab1.charAt(0) != '"' && tab1.charAt(tab1.length()-1) != '"')
+				{
+					if(ope == 1)
+					{
+						sVal1 = extractDataCsvListeOperateur(profondeur,tab1);
+					}
+					val1 = Integer.parseInt(sVal1);
+				}
+				else
+				{
+					sVal1 = tab1.substring(1,tab1.length()-1);
+					val1 = Integer.parseInt(sVal1); 
+				}
+				if(tab2.charAt(0) != '"' && tab2.charAt(tab1.length()-1) != '"')
+				{
+					sVal2 = extractDataCsvListeOperateur(profondeur,tab2);
+					val2 = Integer.parseInt(sVal2);
+				}
+				else
+				{
+					sVal2 = tab2.substring(1,tab2.length()-1);
+					val2 = Integer.parseInt(sVal2);
+				}
+				
+				
+				try {
+				res = val1 / val2;
+				}
+				catch(ArithmeticException e)
+				{
+					System.out.println("DIVISION PAR 0 IMPOSSIBLE");
+				}
+			}
+			catch (NumberFormatException e)
+			{
+				System.out.println("VALEUR NON NUMERQUE");
+			}
+			
+			
+			return String.valueOf(res);
+			
+		}
+		
+		public String resOperation(String[] tabOperation,int[] profondeur)
+		{
+			int ope =0;
+			for(ope=1;ope<tabOperation.length;ope=ope+2)
+			{
+				if(tabOperation[ope].charAt(0) == '+')
+				{
+					tabOperation[ope+1] = operationAddition(tabOperation[ope-1],tabOperation[ope+1],profondeur,ope);
+				}
+				if(tabOperation[ope].charAt(0) == '-')
+				{
+					tabOperation[ope+1] = operationSoustraction(tabOperation[ope-1],tabOperation[ope+1],profondeur,ope);
+				}
+				if(tabOperation[ope].charAt(0) == '*')
+				{
+					tabOperation[ope+1] = operationMultiplication(tabOperation[ope-1],tabOperation[ope+1],profondeur,ope);;;
+				}
+				if(tabOperation[ope].charAt(0) == '/')
+				{
+					tabOperation[ope+1] = operationDivision(tabOperation[ope-1],tabOperation[ope+1],profondeur,ope);
+				}
+				if(tabOperation[ope].charAt(0) == '|')
+				{
+					tabOperation[ope+1] = operationConcatenation(tabOperation[ope-1],tabOperation[ope+1],profondeur,ope);
+				}
+			}
+			return tabOperation[ope-1];
+		}
+		
 		
 		public JSONObject leNomDeLaFonction(BufferedReader reader,String line,JSONObject pere,int[] profondeur,int[] estListe,String[] motArray,boolean pereEstListe)
 		{
@@ -358,38 +657,11 @@ public class convertCsvJson {
 				if(type == "value")
 				{
 					String[] tabOperation = retourneOperandesEtOperation(line);
-					
 					if(tabOperation.length > 1)
 					{
-						System.out.println();
-						int ope =0;
-						for(ope=1;ope<tabOperation.length;ope+=2)
-						{
-							if(tabOperation[ope].charAt(0) == '+')
-							{
-								tabOperation[ope+1] = operationAddition(tabOperation[ope-1],tabOperation[ope+1],profondeur,ope);
-							}
-							if(tabOperation[ope].charAt(0) == '-')
-							{
-								tabOperation[ope+1] = "moins";
-							}
-							if(tabOperation[ope].charAt(0) == '*')
-							{
-								tabOperation[ope+1] = "mult";
-							}
-							if(tabOperation[ope].charAt(0) == '/')
-							{
-								tabOperation[ope+1] = "div";
-							}
-							if(tabOperation[ope].charAt(0) == '|')
-							{
-								tabOperation[ope+1] = operationConcatenation(tabOperation[ope-1],tabOperation[ope+1],profondeur,ope);
-								System.out.println(tabOperation[ope+1]);
-							}
-						}
+//						String res = resOperation(tabOperation,profondeur);
 						
-						
-						pere.accumulate(data, tabOperation[ope-1]);
+//						pere.accumulate(data, res);
 						try{
 							line = reader.readLine();
 							}
@@ -397,21 +669,9 @@ public class convertCsvJson {
 						{
 							e.printStackTrace();
 						}
-						if(pereEstListe == true || (estListe[positionColonne(data)]>1))
-						{
-	//						System.out.println("je suis une value est mon pere une liste");
-	//						System.out.println();
-							
-							pere = gereAccumulatePourListe(pere,estListe, data);
+							pere = gereAccumulatePourListe(pere,estListe, data,tabOperation);
 							leNomDeLaFonction(reader,line,pere,profondeur,estListe,motArray,true);
-						}
-						else
-						{
-	//						System.out.println("je suis une value est mon pere n'est pas une liste");
-	//						System.out.println();
-							
-							leNomDeLaFonction(reader,line,pere,profondeur,estListe,motArray,false);
-						}
+						
 					}
 					else {
 						pere.accumulate(data, extractDataCsv(profondeur,data));
@@ -623,7 +883,43 @@ public class convertCsvJson {
 		        }
 			
 		}
+		
+		
+		public String extractDataCsvListeOperateur(int[] profondeur,String data)
+		{
+			int colonne = 0;
+			String[] line = null;
+			try{
+				
+				FileReader fr = new FileReader("csv.csv");
+				CSVReader reader = new CSVReader(fr);
+				
+				line = reader.readNext();
 
+				for(int i=0;i<line.length;i++)
+				{
+					if(line[i].equals(concatString(data)))
+					{
+						colonne = i;
+					}
+				}	
+				
+				for(int i=1;i<=profondeurActuel[colonne];i++)
+				{
+					line = reader.readNext();
+				}
+				reader.close();
+			}
+			catch(FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			catch(IOException ex)
+			{
+				ex.printStackTrace();
+			}
+			return line[colonne];
+		}
 
 		public String extractDataCsv(int[] profondeur,String data)
 		{
@@ -635,7 +931,7 @@ public class convertCsvJson {
 				CSVReader reader = new CSVReader(fr);
 				
 				line = reader.readNext();
-				
+
 				for(int i=0;i<line.length;i++)
 				{
 					if(line[i].equals(concatString(data)))

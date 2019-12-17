@@ -1,8 +1,17 @@
-{"menu": {
-    "popup": {"menuitem": {
-        "onclick": "CreateNewDoc()",
-        "value": "New"
-    }},
-    "id": "file",
-    "value": "File"
+{"people": {
+    "Prénom": [
+        "AlphonseAlphonseAlphonse",
+        "BéatriceBéatriceBéatrice",
+        "CharlotteCharlotteCharlotte"
+    ],
+    "Sexe": [
+        "M",
+        "F",
+        "F"
+    ],
+    "Annéedenaissance": [
+        "966",
+        "982",
+        "994"
+    ]
 }}

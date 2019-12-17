@@ -1,7 +1,4 @@
-menu : 
--id < id
--value < value
--popup : 
---menuitem : 
----value < value
----onclick < onclick
+people : 
+-Prénom < Prénom | Prénom | Prénom
+-Sexe < Sexe
+-Annéedenaissance < Annéedenaissance / "2"

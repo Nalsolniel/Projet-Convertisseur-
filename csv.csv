@@ -1,2 +1,4 @@
-"menu_id","menu_value","menu_popup_menuitem_value","menu_popup_menuitem_onclick"
-"file","File","New","CreateNewDoc()"
+"people_Sexe","people_Prénom","people_Annéedenaissance"
+"M","Alphonse","1932"
+"F","Béatrice","1964"
+"F","Charlotte","1988"
