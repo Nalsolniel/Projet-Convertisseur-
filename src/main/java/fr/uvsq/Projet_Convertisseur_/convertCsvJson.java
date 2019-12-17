@@ -136,42 +136,6 @@ public class convertCsvJson {
 		}
 		
 		
-		public String extractDataCsv(int[] profondeur,String data)
-		{
-			
-			int colonne = 0;
-			String[] line = null;
-			try{
-				
-				FileReader fr = new FileReader("csv.csv");
-				CSVReader reader = new CSVReader(fr);
-				
-				line = reader.readNext();
-				
-				for(int i=0;i<line.length;i++)
-				{
-					if(line[i].equals(concatString(data)))
-						colonne = i;
-				}			
-				
-				for(int i=1;i<=profondeur[colonne];i++)
-				{
-					line = reader.readNext();
-				}
-				
-				reader.close();
-			}
-			catch(FileNotFoundException e)
-			{
-				e.printStackTrace();
-			}
-			catch(IOException ex)
-			{
-				ex.printStackTrace();
-			}
-			return line[colonne];
-		}
-		
 		public void afficheList()
 		{
 			System.out.println("la liste contient de l'ele 0 a n : ");
@@ -241,14 +205,14 @@ public class convertCsvJson {
 		public JSONObject gereAccumulatePourListe(JSONObject pere,int[] profondeur,String data)
 		{
 			String value = concatString(data);
-			
-			System.out.print("data :");
-			System.out.println(data);
-			System.out.println();
-			
-			System.out.print("value :");
-			System.out.println(value);
-			System.out.println();			
+//			
+//			System.out.print("data :");
+//			System.out.println(data);
+//			System.out.println();
+//			
+//			System.out.print("value :");
+//			System.out.println(value);
+//			System.out.println();			
 			
 			String[] ligne = null;
 			
@@ -262,13 +226,13 @@ public class convertCsvJson {
 				int colonne = positionColonne(ligne,value); 
 						
 				ligne = reader.readNext();
-				System.out.println();
-				System.out.println();
-				System.out.println("//////////////////////////////////////////////");
-				System.out.println(pere);
-				System.out.println("//////////////////////////////////////////////");
-				System.out.println();
-				System.out.println();
+//				System.out.println();
+//				System.out.println();
+//				System.out.println("//////////////////////////////////////////////");
+//				System.out.println(pere);
+//				System.out.println("//////////////////////////////////////////////");
+//				System.out.println();
+//				System.out.println();
 				
 				while((ligne = reader.readNext())!=null)
 				{
@@ -295,6 +259,84 @@ public class convertCsvJson {
 			return pere;
 		}
 		
+		public String[] retourneOperandesEtOperation(String line)
+		{
+//			System.out.println(line.split(" ").length);
+			String[] tab = new String[line.split(" ").length-2];
+			
+			boolean operandePresente = false;
+			
+			for(int i=0;i<line.length();i++)
+			{
+				if(line.charAt(i) == '+' || line.charAt(i) == '-' || line.charAt(i) == '*' || line.charAt(i) == '/' || line.charAt(i) == '|')
+				{
+					operandePresente = true;
+				}
+			}
+			
+			if(operandePresente)
+			{
+				
+				String[] transi = line.split(" ");
+				for(int i=0;i<tab.length;i++)
+				{
+					tab[i] = transi[i+2];
+				}
+			}
+			
+			
+//			for(int i=0;i<tab.length;i++)
+//			{
+//				System.out.println(tab[i]);
+//			}
+			
+			
+			//la dans tab 0 et 2 on a les perandes il faut maintenant recuperer le chemin abolu gace a la list string puis de la
+			//trouver la colonne dans le csv correspondant a ce nom et avec le numero de colonne lire la ligne appropriee 
+			//on met ensuite les val dasn tab 0 et 2 et c'est presque gagne
+			
+			return tab;
+		}
+		
+		public String operationConcatenation(String tab1,String tab2,int[] profondeur,int ope)
+		{
+			
+			if(ope == 1)	
+			{
+				tab1 = extractDataCsv(profondeur,tab1);
+			}
+			tab2 = extractDataCsv(profondeur,tab2);
+			
+			return tab1+tab2;
+		}
+		
+		
+		public String operationAddition(String tab1,String tab2,int[] profondeur,int ope)
+		{
+			int res = 0;
+			try{
+				String sVal1 = tab1;
+				
+				if(ope == 1)
+				{
+					sVal1 = extractDataCsv(profondeur,tab1);
+				}
+				String sVal2 = extractDataCsv(profondeur,tab2);
+				
+				int val1 = Integer.parseInt(sVal1);
+				int val2 = Integer.parseInt(sVal2);
+				
+				res = val1 + val2;
+			}
+			catch (NumberFormatException e)
+			{
+				System.out.println("VALEUR NON NUMERQUE");
+			}
+			
+			
+			return String.valueOf(res);
+		}
+		
 		public JSONObject leNomDeLaFonction(BufferedReader reader,String line,JSONObject pere,int[] profondeur,int[] estListe,String[] motArray,boolean pereEstListe)
 		{
 			if(line == null)
@@ -302,48 +344,105 @@ public class convertCsvJson {
 			else {
 				String type = typeLecture(line);
 				String data = extractDataConfig(line);
-				
-				System.out.print("je lis data : ");
-				System.out.println(data);
-				System.out.println();
-				
-				System.out.print("je lis line : ");
-				System.out.println(line);
-				System.out.println();
+//				
+//				System.out.print("je lis data : ");
+//				System.out.println(data);
+//				System.out.println();
+//				
+//				System.out.print("je lis line : ");
+//				System.out.println(line);
+//				System.out.println();
 				
 				
 				
 				if(type == "value")
 				{
-					pere.accumulate(data, extractDataCsv(profondeur,data));
-					try{
-						line = reader.readLine();
+					String[] tabOperation = retourneOperandesEtOperation(line);
+					
+					if(tabOperation.length > 1)
+					{
+						System.out.println();
+						int ope =0;
+						for(ope=1;ope<tabOperation.length;ope+=2)
+						{
+							if(tabOperation[ope].charAt(0) == '+')
+							{
+								tabOperation[ope+1] = operationAddition(tabOperation[ope-1],tabOperation[ope+1],profondeur,ope);
+							}
+							if(tabOperation[ope].charAt(0) == '-')
+							{
+								tabOperation[ope+1] = "moins";
+							}
+							if(tabOperation[ope].charAt(0) == '*')
+							{
+								tabOperation[ope+1] = "mult";
+							}
+							if(tabOperation[ope].charAt(0) == '/')
+							{
+								tabOperation[ope+1] = "div";
+							}
+							if(tabOperation[ope].charAt(0) == '|')
+							{
+								tabOperation[ope+1] = operationConcatenation(tabOperation[ope-1],tabOperation[ope+1],profondeur,ope);
+								System.out.println(tabOperation[ope+1]);
+							}
 						}
-					catch(IOException e)
-					{
-						e.printStackTrace();
-					}
-					
-//					si pere est liste ou que l'element est une liste
-					
-					if(pereEstListe == true || (estListe[positionColonne(data)]>1))
-					{
-						System.out.println("je suis une value est mon pere une liste");
-						System.out.println();
 						
-						pere = gereAccumulatePourListe(pere,estListe, data);
-						leNomDeLaFonction(reader,line,pere,profondeur,estListe,motArray,true);
-					}
-					else
-					{
-						System.out.println("je suis une value est mon pere n'est pas une liste");
-						System.out.println();
 						
-						leNomDeLaFonction(reader,line,pere,profondeur,estListe,motArray,false);
+						pere.accumulate(data, tabOperation[ope-1]);
+						try{
+							line = reader.readLine();
+							}
+						catch(IOException e)
+						{
+							e.printStackTrace();
+						}
+						if(pereEstListe == true || (estListe[positionColonne(data)]>1))
+						{
+	//						System.out.println("je suis une value est mon pere une liste");
+	//						System.out.println();
+							
+							pere = gereAccumulatePourListe(pere,estListe, data);
+							leNomDeLaFonction(reader,line,pere,profondeur,estListe,motArray,true);
+						}
+						else
+						{
+	//						System.out.println("je suis une value est mon pere n'est pas une liste");
+	//						System.out.println();
+							
+							leNomDeLaFonction(reader,line,pere,profondeur,estListe,motArray,false);
+						}
 					}
-					
+					else {
+						pere.accumulate(data, extractDataCsv(profondeur,data));
+						try{
+							line = reader.readLine();
+							}
+						catch(IOException e)
+						{
+							e.printStackTrace();
+						}
+						
+	//					si pere est liste ou que l'element est une liste
+						
+						if(pereEstListe == true || (estListe[positionColonne(data)]>1))
+						{
+	//						System.out.println("je suis une value est mon pere une liste");
+	//						System.out.println();
+							
+							pere = gereAccumulatePourListe(pere,estListe, data);
+							leNomDeLaFonction(reader,line,pere,profondeur,estListe,motArray,true);
+						}
+						else
+						{
+	//						System.out.println("je suis une value est mon pere n'est pas une liste");
+	//						System.out.println();
+							
+							leNomDeLaFonction(reader,line,pere,profondeur,estListe,motArray,false);
+						}
+					}
 				}
-				
+		
 				else if(type == "object")
 				{
 					
@@ -362,15 +461,15 @@ public class convertCsvJson {
 					}
 					if(estUneListe(motArray, data))
 					{	
-						System.out.println("je suis un objet est une liste");
-						System.out.println();
-						
+//						System.out.println("je suis un objet est une liste");
+//						System.out.println();
+//						
 						objets.get(objets.size()-2).accumulate(data, leNomDeLaFonction(reader,lineTransi,objets.get(objets.size()-1),profondeur,estListe,motArray,true));
 					}
 					else
 					{
-						System.out.println("je suis un objet mais pas une liste");
-						System.out.println();
+//						System.out.println("je suis un objet mais pas une liste");
+//						System.out.println();
 						objets.get(objets.size()-2).accumulate(data, leNomDeLaFonction(reader,lineTransi,objets.get(objets.size()-1),profondeur,estListe,motArray,false));
 					}
 				}
@@ -470,6 +569,7 @@ public class convertCsvJson {
 					}
 				}
 			}
+			
 			return tabMot;
 		}
 		
@@ -516,11 +616,50 @@ public class convertCsvJson {
 		        	FileWriter file = new FileWriter("employees.json");
 		            file.write(all.toString(4));
 		            file.flush();
-		 
+		            file.close();
+		            
 		        } catch (IOException e) {
 		            e.printStackTrace();
 		        }
 			
+		}
+
+
+		public String extractDataCsv(int[] profondeur,String data)
+		{
+			int colonne = 0;
+			String[] line = null;
+			try{
+				
+				FileReader fr = new FileReader("csv.csv");
+				CSVReader reader = new CSVReader(fr);
+				
+				line = reader.readNext();
+				
+				for(int i=0;i<line.length;i++)
+				{
+					if(line[i].equals(concatString(data)))
+					{
+						colonne = i;
+					}
+				}	
+				
+				for(int i=1;i<=profondeur[colonne];i++)
+				{
+					line = reader.readNext();
+				}
+				
+				reader.close();
+			}
+			catch(FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			catch(IOException ex)
+			{
+				ex.printStackTrace();
+			}
+			return line[colonne];
 		}
 	
 	

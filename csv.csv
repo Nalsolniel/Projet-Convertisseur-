@@ -1,4 +1,2 @@
-"menu_id","menu_values","menu_popup_menuitem_value","menu_popup_menuitem_onclick"
+"menu_id","menu_value","menu_popup_menuitem_value","menu_popup_menuitem_onclick"
 "file","File","New","CreateNewDoc()"
-"","","Open","OpenDoc()"
-"","","Close","CloseDoc()"

@@ -143,7 +143,6 @@ public class csvReader {
 	
 	public String[] verifMot(String[] transition,String[] TabBlackList)
 	{
-		
 		boolean blackList = true;
 		
 		for(int i=0;i<transition.length;i++)
@@ -160,7 +159,6 @@ public class csvReader {
 				TabBlackList[j] = transition[i];
 			blackList = true;
 		}
-		
 		return TabBlackList;
 	}
 	
@@ -209,12 +207,16 @@ public class csvReader {
 	public void ecrireMotPareilActualiserMatriceBoolean(String[] matriceATraitee,boolean[] matriceTraitee,FileWriter write)
 	{
 		String[] blackList = new String[tailleMaxPourTableauBlacklist()];
+		int pronfActuel = 0;
+		int pronfTransi = 0;
+		
 		for(int k=0;k<matriceATraitee.length;k++)
 		{
 			
 			if(matriceATraitee[k]!=null)
 			{
 				int casePronfMin = casePlusPetitElement( matriceATraitee, matriceTraitee);
+				pronfTransi = matriceATraitee[casePronfMin].split("_").length;
 				int pronfMin = matriceATraitee[casePronfMin].split("_").length;
 				
 				try
@@ -223,7 +225,18 @@ public class csvReader {
 					transition = matriceATraitee[casePronfMin].split("_");
 					for(int i=1;i<=pronfMin;i++)
 					{
-						if(peutEcrire(blackList,transition[i-1]))
+						
+						if(pronfTransi != pronfActuel)
+						{
+							for(int cpt = 1;cpt<blackList.length;cpt++)
+							{
+								blackList[cpt] = null;
+							}
+							
+						}
+						
+						
+						if(peutEcrire(blackList,transition[i-1])||(i!= 1 && transition[i-1].equals(transition[0])))
 						{
 							for(int j=1;j<i;j++)
 							{
@@ -244,7 +257,17 @@ public class csvReader {
 						}
 						matriceTraitee[casePronfMin] = true;
 					}
-					blackList = verifMot(transition,blackList);
+					if(pronfTransi == pronfActuel)
+					{
+						blackList = verifMot(transition,blackList);
+					}
+					else
+					{
+							blackList = verifMot(transition,blackList);
+						
+						pronfActuel = pronfTransi;
+			
+					}
 					
 				}
 				catch (IOException e) 

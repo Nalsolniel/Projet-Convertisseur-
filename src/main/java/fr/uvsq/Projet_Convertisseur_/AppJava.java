@@ -8,6 +8,8 @@ public class AppJava {
 		
 		convertCsvJson c1 = new convertCsvJson();
 		c1.nom();
+//		
+//		System.out.println(Integer.parseInt("12s3"));
 
 	}
 

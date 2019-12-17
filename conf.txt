@@ -1,6 +1,6 @@
 menu : 
 -id < id
--values < values
+-value < value
 -popup : 
 --menuitem : 
 ---value < value
