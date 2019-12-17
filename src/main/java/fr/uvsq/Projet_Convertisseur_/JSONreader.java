@@ -46,7 +46,8 @@ public class JSONreader
 	
 	public void genConfFile()
 	{
-		String conf = genConfString(j,0);
+		String res = "";
+		String conf = genConfString(j,0,res);
 		File f = new File("conf.txt");
 		try 
 		{
@@ -61,10 +62,9 @@ public class JSONreader
 		}
 	}
 	
-	public String genConfString(JSONObject j, int depth)
+	public String genConfString(JSONObject j, int depth,String res)
 	{
 		Set<String> s = j.keySet();
-		String res = "";
 		int i;
 		for(String val : s)
 		{
@@ -72,13 +72,13 @@ public class JSONreader
 			{
 				for(i=0; i<depth; i++) {res = res + "-";}
 				res = res + val + " : " + "\n";
-				res = res + Confsuiv(j.getJSONArray(val),depth+1);
+				res = Confsuiv(j.getJSONArray(val),depth+1,res);
 			}
 			else if(j.get(val) instanceof JSONObject)
 			{
 				for(i=0; i<depth; i++) {res = res + "-";}
 				res = res + val + " : " + "\n";
-				res = res + genConfString(j.getJSONObject(val), depth+1);
+				res = genConfString(j.getJSONObject(val), depth+1,res);
 			}
 			else
 			{
@@ -89,14 +89,13 @@ public class JSONreader
 		return res;
 	}
 	
-	public String Confsuiv(JSONArray j, int depth)
+	public String Confsuiv(JSONArray j, int depth,String res)
 	{
 		int length = j.length();
 		int i;
 		int k = 0;
 		int stop = 0;
 		ArrayList<JSONObject> dejaVu = new ArrayList<JSONObject>();
-		String res = "";
 		for(i=0; i<length; i++)
 		{
 			if(j.get(i) instanceof JSONObject) 
@@ -122,19 +121,31 @@ public class JSONreader
 				}
 				if(stop == 0)
 				{
-					res = res + genConfString(tmp,depth);
+					res = genConfString(tmp,depth,res);
 					dejaVu.add(tmp);
 				}
 			}
 			else if(j.get(i) instanceof JSONArray)
 			{
-				System.out.println(":");
-				JSONArray tmp = j.getJSONArray(i);//System.out.println(j.get(i));
-				Confsuiv(tmp,depth);
+				String indent = "";
+				int it;
+				for(it=0;it<depth;it++)
+				{
+					indent =  indent + "-";
+				}
+				res = res + indent + i + " : \n";
+				JSONArray tmp = j.getJSONArray(i);
+				res = Confsuiv(tmp,depth,res);
 			}
 			else
 			{
-				System.out.println(i+"-"+j.get(i));
+				String indent = "";
+				int it;
+				for(it=0;it<depth+1;it++)
+				{
+					indent =  indent + "-";
+				}
+				res = res + indent + i + " < " + i + "\n";
 			}
 		}
 		return res;		
@@ -156,13 +167,13 @@ public class JSONreader
 			}
 			else if(j.get(i) instanceof JSONArray)
 			{
-				System.out.println(":");
+				System.out.println(i+" :");
 				JSONArray tmp = j.getJSONArray(i);//System.out.println(j.get(i));
 				suiv(tmp);
 			}
 			else
 			{
-				System.out.println(i+"-"+j.get(i));
+				System.out.println(j.get(i));
 			}
 		}
 				

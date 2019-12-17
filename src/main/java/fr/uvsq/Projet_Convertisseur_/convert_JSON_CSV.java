@@ -26,13 +26,24 @@ public class convert_JSON_CSV
 		ArrayList<String> ligne1 = new ArrayList<String>();
 		int NBin,i,j;
 		String res;
-		
 		for(i=0; i<l.size(); i++)
 		{
 			res = "";
 			ltemp = l.get(i).split(" ");
 			if(ltemp.length == 2)
 			{
+				NBin = 0;
+				j = 0;
+				while(ltemp[0].charAt(j) == '-') 
+				{
+					NBin++;
+					j++;
+				}
+				j=0;
+				while(NBin < in.size())
+				{
+					in.pop();
+				}
 				in.add(ltemp[0]);
 			}
 			else
@@ -78,7 +89,8 @@ public class convert_JSON_CSV
 		ArrayList<String> l = new ArrayList<String>();
 		int i;
 		
-		String conf = r.genConfString(r.getJASON(), 0);
+		String res = "";
+		String conf = r.genConfString(r.getJASON(),0,res);
 		String TabRes[] = conf.split("\n");
 		for(i=0;i<TabRes.length;i++)
 		{
@@ -115,10 +127,17 @@ public class convert_JSON_CSV
 			
 			obj = new ArrayList<String[]>();
 			obj.add(line);
-		
 			Stack<String> pathObj = new Stack<String>();
 			parcours(r.getJASON(),pathObj,1);
 			
+			int j;
+			for(i=0;i<obj.size();i++)
+			{
+				for(j=0;j<obj.get(i).length;j++)
+				{
+					System.out.println(". " +obj.get(i)[j]);
+				}
+			}
 			CSV = modify();
 
 			i = 0;
@@ -380,7 +399,7 @@ public class convert_JSON_CSV
 		}
 	}
 
-	private void suiv(JSONArray j, Stack<String> pathObj,int ligne)
+	private void suiv(JSONArray j, Stack<String> pathObj,int ligne,int liste)
 	{
 		int length = j.length();
 		int i,k = 0,doublon = -1;
@@ -388,35 +407,57 @@ public class convert_JSON_CSV
 		ArrayList<JSONObject> dejaVu = new ArrayList<JSONObject>();
 		for(i=0; i<length; i++)
 		{
-			JSONObject tmp = (JSONObject) j.get(i);
-			while(k<dejaVu.size() && doublon == -1)
+			if(j.get(i) instanceof JSONObject) 
 			{
-				if(tmp.keySet().containsAll(dejaVu.get(k).keySet()) || dejaVu.get(k).keySet().containsAll(tmp.keySet())) 
+				JSONObject tmp = (JSONObject) j.get(i);
+				while(k<dejaVu.size() && doublon == -1)
 				{
-					doublon = k;
+					if(tmp.keySet().containsAll(dejaVu.get(k).keySet()) || dejaVu.get(k).keySet().containsAll(tmp.keySet())) 
+					{
+						doublon = k;
+					}
+					else
+					{
+						if(tmp.keySet().size()>dejaVu.get(k).keySet().size())
+						{
+							dejaVu.set(k, tmp);
+						}
+					}
+					k++;
+				}
+				if(doublon == -1)
+				{
+					dejaVu.add(tmp);
+					nb[k] = 0;
+					parcours(tmp,pathObj,ligne + nb[k]);
 				}
 				else
 				{
-					if(tmp.keySet().size()>dejaVu.get(k).keySet().size())
-					{
-						dejaVu.set(k, tmp);
-					}
+					nb[doublon] = nb[doublon] + 1;
+					parcours(tmp,pathObj,ligne + nb[doublon]);
 				}
-				k++;
+				k = 0;
+				doublon = -1;
 			}
-			if(doublon == -1)
+			else if(j.get(i) instanceof JSONArray)
 			{
-				dejaVu.add(tmp);
-				nb[k] = 0;
-				parcours(tmp,pathObj,ligne + nb[k]);
+				System.out.println(i+" :");
+				JSONArray tmp = j.getJSONArray(i);//System.out.println(j.get(i));
+				suiv(tmp, pathObj, doublon,i);
+			}
+			else if(j.get(i) instanceof String)
+			{
+				pathObj.add("" + liste);
+				pathObj.add("" + i);
+				//System.out.println("ok " + j.get(i) + " " +pathObj+ " " + i +" "+liste);
+				addValue((String) j.get(i),pathObj,i );
+				pathObj.pop();
+				pathObj.pop();
 			}
 			else
 			{
-				nb[doublon] = nb[doublon] + 1;
-				parcours(tmp,pathObj,ligne + nb[doublon]);
+				System.out.println("++++++++++" +	j.get(i));
 			}
-			k = 0;
-			doublon = -1;
 		}		
 	}
 	
@@ -430,7 +471,7 @@ public class convert_JSON_CSV
 			newpathObj.add(val);
 			if(j.get(val) instanceof JSONArray)
 			{
-				suiv(j.getJSONArray(val),newpathObj,ligne);
+				suiv(j.getJSONArray(val),newpathObj,ligne,0);
 			}
 			else if(j.get(val) instanceof JSONObject)
 			{
@@ -444,8 +485,9 @@ public class convert_JSON_CSV
 		}
 	}
 	
-	private void addValue(JSONObject j, Stack<String> pathObj, int ligne)
+	private void addValue(Object j, Stack<String> pathObj, int ligne)
 	{
+		//System.out.println(j +" " +  pathObj);
 		int i = 0;
 		int res = -1, noMatch = 0;
 		int k;
@@ -475,8 +517,18 @@ public class convert_JSON_CSV
 			obj.add(new String[obj.get(0).length]);
 		}
 		if(res != -1)
-		{
-			obj.get(ligne)[res] = j.getString(pathObj.get(pathObj.size()-1));
+		{//System.out.println("match");
+			if(j instanceof JSONObject)
+			{
+				JSONObject ret = (JSONObject) j;
+				obj.get(ligne)[res] = ret.getString(pathObj.get(pathObj.size()-1));
+			}
+			else if(j instanceof String)
+			{
+				String ret = (String) j;
+				obj.get(ligne)[res] = ret;
+				//System.out.println("verif "+ret + " "+ obj.get(ligne)[res]);
+			}
 		}
 	}
 }
