@@ -94,6 +94,7 @@ public class JSONreader
 		int length = j.length();
 		int i;
 		int k = 0;
+		int var = 0;
 		int stop = 0;
 		ArrayList<JSONObject> dejaVu = new ArrayList<JSONObject>();
 		for(i=0; i<length; i++)
@@ -127,43 +128,28 @@ public class JSONreader
 			}
 			else if(j.get(i) instanceof JSONArray)
 			{
-				int it,cont=0;
-				JSONArray val = j.getJSONArray(i);
-				System.out.println(val);
-				for(it=0;it<val.length();it++)
-				{
-					if(val.get(it) instanceof String)
-					{
-						cont++;
-					}
-					System.out.println(val.get(it).getClass() + " " + val + " "+ val.length());
-				}
 				String indent = "";
+				int it;
 				for(it=0;it<depth;it++)
 				{
 					indent =  indent + "-";
 				}
-				if(cont != val.length())
-				{
-					System.out.println(cont);
-					res = res + indent + i + " : \n";
-					JSONArray tmp = j.getJSONArray(i);
-					res = Confsuiv(tmp,depth,res);
-				}
-				else
-				{
-					res = res + indent + i + " < " + i + "\n";
-				}
+				res = res + indent + i + " :\n";
+				res = Confsuiv(j.getJSONArray(i), depth+1, res);
 			}
 			else
 			{
-				String indent = "";
-				int it;
-				for(it=0;it<depth+1;it++)
+				if(var == 0)
 				{
-					indent =  indent + "-";
+					String indent = "";
+					int it;
+					for(it=0;it<depth;it++)
+					{
+						indent =  indent + "-";
+					}
+					res = res + indent + i + " < " + i + "\n";
+					var = 1;
 				}
-				res = res + indent + i + " < " + i + "\n";
 			}
 		}
 		return res;		

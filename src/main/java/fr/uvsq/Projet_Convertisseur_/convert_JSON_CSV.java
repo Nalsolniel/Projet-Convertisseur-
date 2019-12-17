@@ -19,6 +19,62 @@ public class convert_JSON_CSV
 	ArrayList<String[]> obj;
 	ArrayList<String[]> CSV;
 	
+	/*constructeur de la classe convert_JSON_CSV
+	 * prend en paramètre un JSONreader
+	 * la création de l'objet produit la traduction du fichier JSON en un fichier CSV*/
+	public convert_JSON_CSV(JSONreader r)
+	{
+		ArrayList<String> ligne1 = createLigne1(r);
+		File f = new File("retour.csv");
+		try 
+		{
+			//initialisation du CSVwriter
+			f.createNewFile();
+			FileWriter write = new FileWriter(f);
+			CSVWriter csv = new CSVWriter(write,CSVWriter.DEFAULT_SEPARATOR,CSVWriter.NO_QUOTE_CHARACTER,CSVWriter.DEFAULT_ESCAPE_CHARACTER,CSVWriter.DEFAULT_LINE_END);
+			int i;
+			
+			//création du nom des colonnes du fichier temporaire
+			String[] line = supIndent(ligne1);
+			
+			//création du fichier csv temporaire et initialisation des colonnes 
+			obj = new ArrayList<String[]>();
+			obj.add(line);
+			Stack<String> pathObj = new Stack<String>();
+			parcours(r.getJASON(),pathObj,1);
+			
+			//application des modification apporté le fichier de configuration
+			CSV = modify();
+			
+			//écriture du fichier csv
+			i = 0;
+			int j,test;
+			while(i<CSV.size())
+			{
+				test = 0;
+				for(j=0;j<CSV.get(0).length;j++)
+				{
+					if(CSV.get(i)[j] != null)
+					{
+						test = 1;
+					}
+				}
+				if(test == 1)
+				{
+					csv.writeNext(CSV.get(i));
+				}
+				test = 0;
+				i++;
+			}
+			csv.close();
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+	} 
+	
+	/*génération de la première ligne du fichier csv a partir d'un String qui contient les donées du fichiers de configurations*/
 	private  ArrayList<String> genHead(ArrayList<String> l)
 	{
 		String[] ltemp;
@@ -26,6 +82,7 @@ public class convert_JSON_CSV
 		ArrayList<String> ligne1 = new ArrayList<String>();
 		int NBin,i,j;
 		String res;
+		//parcours du fichier de configurations et génération de la 1ere ligne
 		for(i=0; i<l.size(); i++)
 		{
 			res = "";
@@ -83,7 +140,7 @@ public class convert_JSON_CSV
 		}
 		return ligne1;
 	}
-	
+	/*création du tableau de String corespondant a la 1ere ligne d'un fichier csv*/
 	private ArrayList<String> createLigne1(JSONreader r)
 	{
 		ArrayList<String> l = new ArrayList<String>();
@@ -100,6 +157,7 @@ public class convert_JSON_CSV
 		return ligne1;
 	}
 	
+	/*supréssion de l'indentation du fichier de configuration ( caractère '-') */
 	private static String[] supIndent(ArrayList<String> ligne1)
 	{
 		int i;
@@ -112,57 +170,14 @@ public class convert_JSON_CSV
 		return line;
 	}
 	
-	public convert_JSON_CSV(JSONreader r)
-	{
-		ArrayList<String> ligne1 = createLigne1(r);
-		File f = new File("retour.csv");
-		try 
-		{
-			f.createNewFile();
-			FileWriter write = new FileWriter(f);
-			CSVWriter csv = new CSVWriter(write,CSVWriter.DEFAULT_SEPARATOR,CSVWriter.NO_QUOTE_CHARACTER,CSVWriter.DEFAULT_ESCAPE_CHARACTER,CSVWriter.DEFAULT_LINE_END);
-			int i;
-			
-			String[] line = supIndent(ligne1);
-			
-			obj = new ArrayList<String[]>();
-			obj.add(line);
-			Stack<String> pathObj = new Stack<String>();
-			parcours(r.getJASON(),pathObj,1);
-			
-			CSV = modify();
-			i = 0;
-			int j,test;
-			while(i<CSV.size())
-			{
-				test = 0;
-				for(j=0;j<CSV.get(0).length;j++)
-				{
-					if(CSV.get(i)[j] != null)
-					{
-						test = 1;
-					}
-				}
-				if(test == 1)
-				{
-					csv.writeNext(CSV.get(i));
-				}
-				test = 0;
-				i++;
-			}
-			csv.close();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-	} 
-	
+	/*fonction qui a partir d'une modélisation d'un fichier csv et d'un fichier de configuration une nouvelle 
+	 *représentation d'un fichier csv ayant subi des modification */
 	private ArrayList<String[]> modify()
 	{
 		BufferedReader file;
 		ArrayList<String> l = new ArrayList<String>();
 		CSV = new ArrayList<String[]>();
+		//lecture du fichier de configuration 
 		try 
 		{
 			file = new BufferedReader(new FileReader("conf.txt"));
@@ -182,27 +197,31 @@ public class convert_JSON_CSV
 			e.printStackTrace();
 		}
 		
+		//création de la ligne d'entête
 		ArrayList<String> ligne1 = genHead(l);
-		System.out.println(ligne1);
 		Stack<String> chemin = new Stack<String>();
 		String[] line = supIndent(ligne1);
+		//initialisation des lignes du fichier csv
 		CSV.add(line);
 		while(CSV.size() <= obj.size())
 		{
 			CSV.add(new String[line.length]);
 		}
+		//opération pour optenir les modification de la configuration
 		createCSV(chemin, l);
 		return CSV;
 	}
 	
+	/*fonction qui affecte les valeurs et aplique les modifications sur le fichier csv*/
 	private void createCSV(Stack<String> chemin, ArrayList<String> l)
 	{
 		int i,length,j,pop,k;
 		int cont = 0;
-		
+		//pour toutes les colonnes 
 		for(i=0;i<l.size();i++)
 		{
 			length = l.get(i).split(" ").length;
+			//entrée dans une profondeur d'objet suplémentaire 
 			if(length == 2)
 			{
 				j = 0;
@@ -218,6 +237,7 @@ public class convert_JSON_CSV
 				}
 				chemin.add(l.get(i).split(" ")[0]);
 			}
+			//affectation d'une valeurs et de ses opérations
 			else
 			{
 				j = 0;
@@ -231,7 +251,7 @@ public class convert_JSON_CSV
 					System.out.println("pop "+chemin.pop());
 
 				}
-				//3ieme mot : ajout de la première valeur a la colonne
+				//ajout de la première valeur dans la colonne
 				concat(chemin,l.get(i).split(" ")[2],l.get(i).split(" ")[0],true);
 				System.out.println(chemin);
 				
@@ -246,10 +266,12 @@ public class convert_JSON_CSV
 		}
 	}
 	
+	/*fonction qui applique une opération sur une colonnes de cvs*/
 	private void operator(Stack<String> chemin, ArrayList<String> l, int nbOp, int ligne)
 	{
 		try 
 		{
+			//concaténation
 			if(l.get(ligne).split(" ")[nbOp].equals("|"))
 			{
 				if(l.get(ligne).split(" ")[nbOp+1].charAt(0) != '"')
@@ -261,18 +283,22 @@ public class convert_JSON_CSV
 					concat(chemin,l.get(ligne).split(" ")[0],l.get(ligne).split(" ")[nbOp+1]);
 				}
 			}
+			//addition 
 			else if(l.get(ligne).split(" ")[nbOp].equals("+"))
 			{
 				add(chemin,l.get(ligne).split(" ")[0],l.get(ligne).split(" ")[nbOp+1]);
 			}
+			//supression
 			else if(l.get(ligne).split(" ")[nbOp].equals("-"))
 			{
 				supp(chemin,l.get(ligne).split(" ")[0],l.get(ligne).split(" ")[nbOp+1]);
 			}
+			//division
 			else if(l.get(ligne).split(" ")[nbOp].equals("/"))
 			{
 				div(chemin,l.get(ligne).split(" ")[0],l.get(ligne).split(" ")[nbOp+1]);
 			}
+			//multiplication
 			else if(l.get(ligne).split(" ")[nbOp].equals("*"))
 			{
 				mult(chemin,l.get(ligne).split(" ")[0],l.get(ligne).split(" ")[nbOp+1]);
@@ -288,10 +314,12 @@ public class convert_JSON_CSV
 		}
 	}
 	
+	/*aplication de l'addition sur une colonne
+	 * return l'exception NumberFormatException si l'une des deux opérande ne sont pas des entiers*/
 	private void add(Stack<String> chemin, String val, String add)
 	{
-		int colonne = getColonne(chemin,val);
-		int colonneCVS = getColonne(chemin,add);
+		int colonne = getColonne(chemin,val,0);
+		int colonneCVS = getColonne(chemin,add,1);
 		int i,valu;
 		for(i=1;i<obj.size();i++)
 		{
@@ -303,10 +331,12 @@ public class convert_JSON_CSV
 		}
 	}
 	
+	/*aplication de la supression sur une colonne
+	 * return l'exception NumberFormatException si l'une des deux opérande ne sont pas des entiers*/
 	private void supp(Stack<String> chemin, String val, String add)
 	{
-		int colonne = getColonne(chemin,val);
-		int colonneCVS = getColonne(chemin,add);
+		int colonne = getColonne(chemin,val,0);
+		int colonneCVS = getColonne(chemin,add,1);
 		int i,valu;
 		for(i=1;i<obj.size();i++)
 		{
@@ -318,10 +348,12 @@ public class convert_JSON_CSV
 		}
 	}
 	
+	/*aplication de la multiplication sur une colonne
+	 * return l'exception NumberFormatException si l'une des deux opérande ne sont pas des entiers*/
 	private void mult(Stack<String> chemin, String val, String add)
 	{
-		int colonne = getColonne(chemin,val);
-		int colonneCVS = getColonne(chemin,add);
+		int colonne = getColonne(chemin,val,0);
+		int colonneCVS = getColonne(chemin,add,1);
 		int i,valu;
 		for(i=1;i<obj.size();i++)
 		{
@@ -333,10 +365,12 @@ public class convert_JSON_CSV
 		}
 	}
 	
+	/*aplication de la division sur une colonne
+	 * return l'exception NumberFormatException si l'une des deux opérande ne sont pas des entiers*/
 	private void div(Stack<String> chemin, String val, String add)
 	{
-		int colonne = getColonne(chemin,val);
-		int colonneCVS = getColonne(chemin,add);
+		int colonne = getColonne(chemin,val,0);
+		int colonneCVS = getColonne(chemin,add,1);
 		int i,valu;
 		for(i=1;i<obj.size();i++)
 		{
@@ -348,8 +382,18 @@ public class convert_JSON_CSV
 		}
 	}
 	
-	private int getColonne(Stack<String> chemin, String val)
+	/*obtention du numéro de la colonne du modélisation d'un fichier csv*/
+	private int getColonne(Stack<String> chemin, String val ,int elem)
 	{
+		ArrayList<String[]> op;
+		if(elem == 0)
+		{
+			op = obj;
+		}
+		else
+		{
+			op = CSV;
+		}
 		String tmp = "";
 		int i;
 		int colonne = -1;
@@ -367,9 +411,9 @@ public class convert_JSON_CSV
 		{
 			tmp = tmp.replaceFirst("_", "");
 		}
-		for(i=0;i<obj.get(0).length;i++)
+		for(i=0;i<op.get(0).length;i++)
 		{
-			if(tmp.equals(obj.get(0)[i]))
+			if(tmp.equals(op.get(0)[i]))
 			{
 				colonne = i;
 			}
@@ -377,9 +421,10 @@ public class convert_JSON_CSV
 		return colonne;
 	}
 	
+	/*concaténaton entre une colonne et un String */
 	private void concat(Stack<String> chemin, String val, String add)
 	{
-		int colonneCVS = getColonne(chemin,val);
+		int colonneCVS = getColonne(chemin,val,1);
 		int i;
 		if(colonneCVS != -1)
 		{
@@ -394,33 +439,32 @@ public class convert_JSON_CSV
 		}
 	}
 	
+	/*concaténation de deux colonnes*/
 	private void concat(Stack<String> chemin, String val, String val2, Boolean premier) 
 	{
-		int colonne = getColonne(chemin,val);
-		int colonneCVS = getColonne(chemin,val2);
-		System.out.println("                    val " + val + " "+colonneCVS+ " " + val2);
+		int colonne = getColonne(chemin,val,0);
+		int colonneCVS = getColonne(chemin,val2,1);
 		int i;
-		System.out.println("in");
 		if(colonne != -1 && colonneCVS != -1)
-		{System.out.println("add " + val + " " + val2);
+		{
 			for(i=1;i<obj.size();i++) 
 			{
 				if(obj.get(i)[colonne] != null)
 				{
-					System.out.println("                               "+CSV.get(i)[colonneCVS] + " " + obj.get(i)[colonne]);
 					if(CSV.get(i)[colonneCVS] != null )
-					{System.out.println("add +");
-						CSV.get(i)[colonneCVS] = CSV.get(i)[colonneCVS] + obj.get(i)[colonne];System.out.println("concat : " + CSV.get(i)[colonneCVS]);
+					{
+						CSV.get(i)[colonneCVS] = CSV.get(i)[colonneCVS] + obj.get(i)[colonne];
 					}
 					else
-					{System.out.println("add null " + obj.get(i)[colonne]);
+					{
 						CSV.get(i)[colonneCVS] = obj.get(i)[colonne];
 					}
 				}
 			}
 		}
 	}
-
+	
+	/*parcours d'une JSONArray pour écrire la modélisation d'un fichier csv*/
 	private void suiv(JSONArray j, Stack<String> pathObj,int ligne,int liste)
 	{
 		int length = j.length();
@@ -429,31 +473,33 @@ public class convert_JSON_CSV
 		ArrayList<JSONObject> dejaVu = new ArrayList<JSONObject>();
 		for(i=0; i<length; i++)
 		{
+			//evaluation d'un objet JSON
 			if(j.get(i) instanceof JSONObject) 
 			{
 				JSONObject tmp = (JSONObject) j.get(i);
 				while(k<dejaVu.size() && doublon == -1)
 				{
+					//recherche d'objet en doublons
 					if(tmp.keySet().containsAll(dejaVu.get(k).keySet()) || dejaVu.get(k).keySet().containsAll(tmp.keySet())) 
 					{
 						doublon = k;
 					}
 					else
 					{
-						if(tmp.keySet().size()>dejaVu.get(k).keySet().size())
+						if(tmp.keySet().size()>dejaVu.get(k).keySet().size())//ajout a la liste des doublons 
 						{
 							dejaVu.set(k, tmp);
 						}
 					}
 					k++;
 				}
-				if(doublon == -1)
+				if(doublon == -1)//si l'objet n'existe pas en double
 				{
 					dejaVu.add(tmp);
 					nb[k] = 0;
 					parcours(tmp,pathObj,ligne + nb[k]);
 				}
-				else
+				else//si un objet du même type a déja été évalué
 				{
 					nb[doublon] = nb[doublon] + 1;
 					parcours(tmp,pathObj,ligne + nb[doublon]);
@@ -461,52 +507,23 @@ public class convert_JSON_CSV
 				k = 0;
 				doublon = -1;
 			}
+			//évaluation d'un JSONArray
 			else if(j.get(i) instanceof JSONArray)
 			{
-				int it,cont=0;
-				JSONArray val = j.getJSONArray(i);
-				for(it=0;it<val.length();it++)
-				{
-					if(val.get(it) instanceof String)
-					{
-						cont++;
-					}
-					System.out.println(val.get(it).getClass() + " " + val + " "+ val.length());
-				}
-				if(cont != val.length())
-				{
-					System.out.println(cont);
-					JSONArray tmp = j.getJSONArray(i);
-					int parc;
-					for(parc=0;parc<tmp.length();parc++)
-					{
-						System.out.println("void" + pathObj + " " + tmp.get(parc));
-						addValue(tmp.get(parc), pathObj, ligne+i);
-					}
-				}
-				else
-				{
-					System.out.println(i+" :");
-					JSONArray tmp = j.getJSONArray(i);//System.out.println(j.get(i));
-					suiv(tmp, pathObj, doublon,i);
-				}
+				pathObj.add(""+i);
+				suiv(j.getJSONArray(i), pathObj, ligne, liste);
+				pathObj.pop();
 			}
+			//évaluation d'un String
 			else if(j.get(i) instanceof String)
 			{
 				pathObj.add("" + liste);
-				pathObj.add("" + i);
-				//System.out.println("ok " + j.get(i) + " " +pathObj+ " " + i +" "+liste);
 				addValue((String) j.get(i),pathObj,i+1);
 				pathObj.pop();
-				pathObj.pop();
-			}
-			else
-			{
-				System.out.println("++++++++++" +	j.get(i));
 			}
 		}		
 	}
-	
+	/*parcours d'un objet JSON*/
 	private void parcours(JSONObject j, Stack<String> pathObj, int ligne)
 	{
 		Set<String> s = j.keySet();
@@ -515,14 +532,17 @@ public class convert_JSON_CSV
 		for(String val : s)
 		{
 			newpathObj.add(val);
+			//évaluation d'un objet JSON
 			if(j.get(val) instanceof JSONArray)
 			{
 				suiv(j.getJSONArray(val),newpathObj,ligne,0);
 			}
+			//évaluation d'une JSONArray
 			else if(j.get(val) instanceof JSONObject)
 			{
 				parcours(j.getJSONObject(val),newpathObj,ligne);
 			}
+			//évaluation d'une valeurs (int,String,bool)
 			else
 			{
 				addValue(j,newpathObj,ligne);
@@ -530,14 +550,14 @@ public class convert_JSON_CSV
 			newpathObj.pop();
 		}
 	}
-	
+	/*fonction qui ajoute une valeurs dans la représentation temporaire du fichiers csv (obj)*/
 	private void addValue(Object j, Stack<String> pathObj, int ligne)
 	{
-		//System.out.println(j +" " +  pathObj);
 		int i = 0;
 		int res = -1, noMatch = 0;
 		int k;
 		String[] temp = null;
+		//parcours de tous les noms de colonnes possible pour trouver l'emplacement d'ajout de la valeur
 		while(i<obj.get(0).length && res == -1)
 		{
 			temp = obj.get(0)[i].split("_");
@@ -550,7 +570,7 @@ public class convert_JSON_CSV
 						noMatch = 1;
 					}
 				}
-				if(noMatch == 0)
+				if(noMatch == 0)//si l'intégralité des termes composant les colonnes sont identique
 				{
 					res = i;
 				}
@@ -558,32 +578,30 @@ public class convert_JSON_CSV
 			}
 			i++; 
 		}
+		//création de colonnes potentiellement manquante
 		while(obj.size()<ligne+1)
 		{
 			obj.add(new String[obj.get(0).length]);
 		}
 		if(res != -1)
-		{//System.out.println("match");
+		{
+			//ajout d'un JSONObject 
 			if(j instanceof JSONObject)
 			{
 				JSONObject ret = (JSONObject) j;
 				obj.get(ligne)[res] = ret.getString(pathObj.get(pathObj.size()-1));
 			}
+			//ajout d'un String
 			else if(j instanceof String)
 			{
 				String ret = (String) j;
 				obj.get(ligne)[res] = ret;
-				System.out.println("verif "+ret + " "+ obj.get(ligne)[res] + " ligne : " +ligne);
 			}
+			//ajout d'un entier
 			else if(j instanceof Integer)
 			{
 				Integer ret = (Integer) j;
 				obj.get(ligne)[res] = "" + ret;
-				System.out.println("verif "+ret + " "+ obj.get(ligne)[res] + " ligne : " +ligne);
-			}
-			else
-			{System.out.println(j.getClass());
-				
 			}
 		}
 	}
