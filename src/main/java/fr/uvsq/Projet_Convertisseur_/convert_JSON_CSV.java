@@ -130,20 +130,24 @@ public class convert_JSON_CSV
 			Stack<String> pathObj = new Stack<String>();
 			parcours(r.getJASON(),pathObj,1);
 			
-			int j;
-			for(i=0;i<obj.size();i++)
-			{
-				for(j=0;j<obj.get(i).length;j++)
-				{
-					System.out.println(". " +obj.get(i)[j]);
-				}
-			}
 			CSV = modify();
-
 			i = 0;
-			while(i<CSV.size()-1)
+			int j,test;
+			while(i<CSV.size())
 			{
-				csv.writeNext(CSV.get(i));
+				test = 0;
+				for(j=0;j<CSV.get(0).length;j++)
+				{
+					if(CSV.get(i)[j] != null)
+					{
+						test = 1;
+					}
+				}
+				if(test == 1)
+				{
+					csv.writeNext(CSV.get(i));
+				}
+				test = 0;
 				i++;
 			}
 			csv.close();
@@ -179,6 +183,7 @@ public class convert_JSON_CSV
 		}
 		
 		ArrayList<String> ligne1 = genHead(l);
+		System.out.println(ligne1);
 		Stack<String> chemin = new Stack<String>();
 		String[] line = supIndent(ligne1);
 		CSV.add(line);
@@ -200,6 +205,17 @@ public class convert_JSON_CSV
 			length = l.get(i).split(" ").length;
 			if(length == 2)
 			{
+				j = 0;
+				while(l.get(i).split(" ")[0].charAt(j) == '-')
+				{
+					cont++;j++;
+				}
+				pop = chemin.size()-cont;
+				for(j=0;j<(pop);j++)
+				{
+					System.out.println("pop "+chemin.pop());
+
+				}
 				chemin.add(l.get(i).split(" ")[0]);
 			}
 			else
@@ -212,14 +228,17 @@ public class convert_JSON_CSV
 				pop = chemin.size()-cont;
 				for(j=0;j<(pop);j++)
 				{
-					chemin.pop();
+					System.out.println("pop "+chemin.pop());
+
 				}
 				//3ieme mot : ajout de la première valeur a la colonne
 				concat(chemin,l.get(i).split(" ")[2],l.get(i).split(" ")[0],true);
+				System.out.println(chemin);
 				
 				//aplication des operateurs 
 				for(k=3;k<l.get(i).split(" ").length;k=k+2)
 				{
+					System.out.println("                               ok");
 					operator(chemin,l,k,i);
 				}
 			}
@@ -379,19 +398,22 @@ public class convert_JSON_CSV
 	{
 		int colonne = getColonne(chemin,val);
 		int colonneCVS = getColonne(chemin,val2);
+		System.out.println("                    val " + val + " "+colonneCVS+ " " + val2);
 		int i;
+		System.out.println("in");
 		if(colonne != -1 && colonneCVS != -1)
-		{
+		{System.out.println("add " + val + " " + val2);
 			for(i=1;i<obj.size();i++) 
 			{
 				if(obj.get(i)[colonne] != null)
 				{
+					System.out.println("                               "+CSV.get(i)[colonneCVS] + " " + obj.get(i)[colonne]);
 					if(CSV.get(i)[colonneCVS] != null )
-					{
+					{System.out.println("add +");
 						CSV.get(i)[colonneCVS] = CSV.get(i)[colonneCVS] + obj.get(i)[colonne];System.out.println("concat : " + CSV.get(i)[colonneCVS]);
 					}
 					else
-					{
+					{System.out.println("add null " + obj.get(i)[colonne]);
 						CSV.get(i)[colonneCVS] = obj.get(i)[colonne];
 					}
 				}
@@ -441,16 +463,40 @@ public class convert_JSON_CSV
 			}
 			else if(j.get(i) instanceof JSONArray)
 			{
-				System.out.println(i+" :");
-				JSONArray tmp = j.getJSONArray(i);//System.out.println(j.get(i));
-				suiv(tmp, pathObj, doublon,i);
+				int it,cont=0;
+				JSONArray val = j.getJSONArray(i);
+				for(it=0;it<val.length();it++)
+				{
+					if(val.get(it) instanceof String)
+					{
+						cont++;
+					}
+					System.out.println(val.get(it).getClass() + " " + val + " "+ val.length());
+				}
+				if(cont != val.length())
+				{
+					System.out.println(cont);
+					JSONArray tmp = j.getJSONArray(i);
+					int parc;
+					for(parc=0;parc<tmp.length();parc++)
+					{
+						System.out.println("void" + pathObj + " " + tmp.get(parc));
+						addValue(tmp.get(parc), pathObj, ligne+i);
+					}
+				}
+				else
+				{
+					System.out.println(i+" :");
+					JSONArray tmp = j.getJSONArray(i);//System.out.println(j.get(i));
+					suiv(tmp, pathObj, doublon,i);
+				}
 			}
 			else if(j.get(i) instanceof String)
 			{
 				pathObj.add("" + liste);
 				pathObj.add("" + i);
 				//System.out.println("ok " + j.get(i) + " " +pathObj+ " " + i +" "+liste);
-				addValue((String) j.get(i),pathObj,i );
+				addValue((String) j.get(i),pathObj,i+1);
 				pathObj.pop();
 				pathObj.pop();
 			}
@@ -527,7 +573,17 @@ public class convert_JSON_CSV
 			{
 				String ret = (String) j;
 				obj.get(ligne)[res] = ret;
-				//System.out.println("verif "+ret + " "+ obj.get(ligne)[res]);
+				System.out.println("verif "+ret + " "+ obj.get(ligne)[res] + " ligne : " +ligne);
+			}
+			else if(j instanceof Integer)
+			{
+				Integer ret = (Integer) j;
+				obj.get(ligne)[res] = "" + ret;
+				System.out.println("verif "+ret + " "+ obj.get(ligne)[res] + " ligne : " +ligne);
+			}
+			else
+			{System.out.println(j.getClass());
+				
 			}
 		}
 	}
