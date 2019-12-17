@@ -88,6 +88,11 @@ public class convertReaderTest {
 	
 	//afficheList impossible 
 	//public void afficheList()
+	@Test
+	public final void TestTrueafficheList() {
+		convertCsvJson c =new convertCsvJson();
+		c.afficheList();
+	}
 	
 	//concatString
 	//public String concatString(String data)
@@ -217,7 +222,28 @@ public class convertReaderTest {
 	}
 	//extractDataCsv
 	//public String extractDataCsv(int[] profondeur,String data)
-	
+	@Test
+	public final void TetsTrueextractDataCsv() {
+		convertCsvJson c =new convertCsvJson();
+		
+		try{
+			FileReader fr = new FileReader("csv.csv");
+			CSVReader reader = new CSVReader(fr);
+			String[] line= reader.readNext();
+			reader.close();
+			
+			
+			String data=new String();data="menu_popup_menuitem_value";
+			//data=c.extractDataCsv(profondeur, data);
+			//	A FINIR
+		
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}	
+		
+	}
 	//extractDataWithoutDepth
 	//public String extractDataWithoutDepth(String line)
 	@Test
@@ -267,5 +293,24 @@ public class convertReaderTest {
 	
 	//typeLecture 
 	//public String typeLecture(String line)
-	
+	@Test
+	public final void TestTruetypeLecture() {
+		convertCsvJson c =new convertCsvJson();
+		String line =new String ();
+		boolean r;
+		line="-mobile < mobile";
+		line=c.typeLecture(line);
+		r=line.equals("value");
+		assertEquals(r,true);
+	}
+	@Test
+	public final void Test2TruetypeLecture() {
+		convertCsvJson c =new convertCsvJson();
+		String line =new String ();
+		boolean r;
+		line="tel : ";
+		line=c.typeLecture(line);
+		r=line.equals("object");
+		assertEquals(r,true);
+	}	
 }

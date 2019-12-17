@@ -139,7 +139,7 @@ public class convertCsvJson {
 		{
 			
 			int colonne = 0;
-			String[] line = null;
+			String[] line = null; 
 			try{
 				
 				FileReader fr = new FileReader("csv.csv");
