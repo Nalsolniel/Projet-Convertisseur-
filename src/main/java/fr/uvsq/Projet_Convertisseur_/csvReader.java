@@ -23,11 +23,11 @@ public class csvReader {
 					for (int x=0; x<line.length; x++);
 				}
 		
-			reader.close();
+			reader.close(); 
 		}
 		catch(FileNotFoundException e)
 		{
-			e.printStackTrace();
+			e.printStackTrace(); 
 		}
 		catch(IOException ex)
 		{
