@@ -7,11 +7,12 @@ import org.json.*;
 
 public class convertCsvJson {
 	
-	List<String> list = new ArrayList<String>();
-	List<JSONObject> objets = new ArrayList<JSONObject>();	
-	int[] profondeurActuel = new int[nombreElements()];
+	List<String> list = new ArrayList<String>(); //stock le nom des objets json en cours d'utilisation
+	List<JSONObject> objets = new ArrayList<JSONObject>();	//stock les objets json en cours d'utilisation
+	int[] profondeurActuel = new int[nombreElements()]; //tableau contenant la profondeur actuelle de chaque element c'est à dire
+														//dans quelle ligne du fichier .csv nous somme en train de lire
 	
-
+//		fonction qui va s'occupper de la gestion des listes afin de garder toujours le chemin absolu courant
 		public void gestionList(String data,JSONObject obj) 
 		{
 			
@@ -37,7 +38,7 @@ public class convertCsvJson {
 			}
 		}
 		
-		
+//		Permet de savoir si la ligne lue dans le fichier de configuration est un objet ( : ) ou une valeur ( < )
 		public String typeLecture(String line)
 		{
 			for(int i=0;i<line.length();i++)
@@ -50,13 +51,13 @@ public class convertCsvJson {
 			return "error";
 		}
 		
+		//renvoi un String contenant le premier mot de la ligne du fichier de configuration lue avec sa profondeur (les -)
 		public String extractDataConfigWithDepth(String line)
 		{
 			String data = line.substring(0,line.indexOf(32));
 			return data;			
 		}
-		
-		
+		//Renvoi un String contenant le premier mot de la ligne du fichier de configuration lue  sans sa profondeur
 		public String extractDataConfig(String line)
 		{
 			int cpt=0;
@@ -69,7 +70,7 @@ public class convertCsvJson {
 			String data = line.substring(cpt,line.indexOf(32));
 			return data;			
 		}
-		
+		//Renvoie l'integralite de la ligne du fichier de configuration lue sans la profondeur ( - )
 		public String extractDataWithoutDepth(String line)
 		{
 			int cpt=0;
@@ -82,7 +83,7 @@ public class convertCsvJson {
 			String data = line.substring(cpt,line.length());
 			return data;			
 		}
-		
+		//Renvoie le chemin absolue du String en parametre c'est a dire la concatenation du pere racine et de ses fils jusqu'a cet element
 		public String concatString(String data)
 		{
 
@@ -110,6 +111,9 @@ public class convertCsvJson {
 			
 			return dataConcat;
 		}
+	
+		
+/*		A SUPPRIMER
 		
 		public int nombreColonne()
 		{
@@ -134,8 +138,25 @@ public class convertCsvJson {
 			}
 			
 			return line.length;
-		}
+		} */
 		
+		//Retourne le nombre d'element/le nombre de colonne dasn le fichier .csv
+		public int nombreElements()
+		{
+			BufferedReader reader;
+			String line = "";
+			try{
+				reader = new BufferedReader(new FileReader("csv.csv"));
+				line = reader.readLine();
+				
+				reader.close();
+			}
+			catch(IOException e)
+			{
+				e.printStackTrace();
+			}
+			return line.split(",").length;			
+		}
 		
 		public void afficheList()
 		{
@@ -148,6 +169,7 @@ public class convertCsvJson {
 			System.out.println();
 		}
 		
+		//Fonction qui renvoie true si le parametre data est present dans le tableau tab, renvoie false sinon
 		public boolean estUneListe(String[] tab,String data)
 		{
 			for(int i=0;i<tab.length;i++)
@@ -156,13 +178,15 @@ public class convertCsvJson {
 			return false;
 		}
 		
-		public int positionColonne(String[] ligne,String value)
+		//Les deux fonctions suivantes retournent l'emplacement de la colonne du parametre data dans le fichier .csv
+		//La seul difference est que dans l'une on initialise la lecture du fichier .csv dans l'autre on lui passe en parametre
+		public int positionColonne(String[] ligne,String data)
 		{
 			int colonne = 0;
 			
 			for(int i=0;i<ligne.length;i++)
 			{
-				if(ligne[i].equals(value))
+				if(ligne[i].equals(data))
 				{
 					colonne = i;
 				}
@@ -203,54 +227,6 @@ public class convertCsvJson {
 			return colonne;
 		}
 		
-		public JSONObject gereAccumulatePourListe(JSONObject pere,int[] profondeur,String data)
-		{
-			String value = concatString(data);		
-			
-			String[] ligne = null;
-			
-			try{
-				
-				FileReader fr = new FileReader("csv.csv");
-				CSVReader reader = new CSVReader(fr);
-				
-				ligne = reader.readNext();
-				
-				int colonne = positionColonne(ligne,value); 
-						
-				ligne = reader.readNext();
-//				System.out.println();
-//				System.out.println();
-//				System.out.println("//////////////////////////////////////////////");
-//				System.out.println(pere);
-//				System.out.println("//////////////////////////////////////////////");
-//				System.out.println();
-//				System.out.println();
-				
-				while((ligne = reader.readNext())!=null)
-				{
-					
-					if(ligne[colonne].length()>=1)
-					{
-						pere.accumulate(data, ligne[colonne]);
-					}
-			
-				}
-				
-				reader.close();
-			}
-			catch(FileNotFoundException e)
-			{
-				e.printStackTrace();
-			}
-			catch(IOException ex)
-			{
-				ex.printStackTrace();
-			}
-			
-
-			return pere;
-		}
 		
 		public void actualiseTabProfondeurActuel(String[] tabOperation)
 		{
@@ -276,7 +252,6 @@ public class convertCsvJson {
 					
 				 ligne = reader.readNext();
 				 colonne = positionColonne(ligne,value);
-				 System.out.println(colonne);
 				}
 				catch(FileNotFoundException e)
 				{
@@ -305,11 +280,53 @@ public class convertCsvJson {
 			}
 			
 		}
-		
+				
+		public JSONObject gereAccumulatePourListe(JSONObject pere,int[] profondeur,String data)
+		{
+			String value = concatString(data);		
+			
+			String[] ligne = null;
+			
+			try{
+				
+				FileReader fr = new FileReader("csv.csv");
+				CSVReader reader = new CSVReader(fr);
+				
+				ligne = reader.readNext();
+				
+				int colonne = positionColonne(ligne,value); 
+						
+				ligne = reader.readNext();
+
+				while((ligne = reader.readNext())!=null)
+				{
+					
+					if(ligne[colonne].length()>=1)
+					{
+						pere.accumulate(data, ligne[colonne]);
+					}
+			
+				}
+				
+				reader.close();
+			}
+			catch(FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			catch(IOException ex)
+			{
+				ex.printStackTrace();
+			}
+			
+
+			return pere;
+		}
+			
 		public JSONObject gereAccumulatePourListe(JSONObject pere,int[] profondeur,String data,String[] tabOperation)
 		{
 			String res = null;
-			String value = concatString(data);	
+//			String value = concatString(data);	
 			String[] ligne = null;
 			String[] tabOperationTransition = new String[tabOperation.length];
 			for(int cpt=0;cpt<tabOperation.length;cpt++)
@@ -329,14 +346,8 @@ public class convertCsvJson {
 				
 				ligne = reader.readNext();
 				
-//				int colonne = positionColonne(ligne,value); 
-						
-//				ligne = reader.readNext();
-				
 				while((ligne = reader.readNext())!=null)
 				{
-					System.out.println();
-					System.out.println("new line");
 					res = resOperation(tabOperationTransition,profondeur);
 
 					pere.accumulate(data, res);
@@ -361,8 +372,7 @@ public class convertCsvJson {
 			
 			return pere;
 		}
-		
-		
+	
 		public String[] retourneOperandesEtOperation(String line)
 		{
 //			System.out.println(line.split(" ").length);
@@ -411,8 +421,7 @@ public class convertCsvJson {
 			tab2 = extractDataCsvListeOperateur(profondeur,tab2);
 			return tab1+tab2;
 		}
-		
-		
+			
 		public String operationAddition(String tab1,String tab2,int[] profondeur,int ope)
 		{
 			int res = 0;
@@ -444,7 +453,7 @@ public class convertCsvJson {
 				else
 				{
 					sVal2 = tab2.substring(1,tab2.length()-1);
-					val2 = Integer.parseInt(sVal2); //sans les ""
+					val2 = Integer.parseInt(sVal2);
 				}
 				
 				
@@ -490,7 +499,7 @@ public class convertCsvJson {
 				else
 				{
 					sVal2 = tab2.substring(1,tab2.length()-1);
-					val2 = Integer.parseInt(sVal2); //sans les ""
+					val2 = Integer.parseInt(sVal2);
 				}
 				
 				
@@ -536,7 +545,7 @@ public class convertCsvJson {
 				else
 				{
 					sVal2 = tab2.substring(1,tab2.length()-1);
-					val2 = Integer.parseInt(sVal2); //sans les ""
+					val2 = Integer.parseInt(sVal2);
 				}
 				
 				
@@ -553,8 +562,6 @@ public class convertCsvJson {
 		
 		public String operationDivision(String tab1,String tab2,int[] profondeur,int ope)
 		{
-			System.out.println(tab2.charAt(0));
-			System.out.println(tab2.charAt(tab2.length()-1));
 			int res = 0;
 			int val1 = 0;
 			int val2 = 0;
@@ -634,34 +641,20 @@ public class convertCsvJson {
 			}
 			return tabOperation[ope-1];
 		}
-		
-		
-		public JSONObject leNomDeLaFonction(BufferedReader reader,String line,JSONObject pere,int[] profondeur,int[] estListe,String[] motArray,boolean pereEstListe)
+			
+		public JSONObject traitement(BufferedReader reader,String line,JSONObject pere,int[] profondeur,int[] estListe,String[] motArray,boolean pereEstListe)
 		{
 			if(line == null)
 				return pere;
 			else {
 				String type = typeLecture(line);
 				String data = extractDataConfig(line);
-//				
-//				System.out.print("je lis data : ");
-//				System.out.println(data);
-//				System.out.println();
-//				
-//				System.out.print("je lis line : ");
-//				System.out.println(line);
-//				System.out.println();
-				
-				
-				
+			
 				if(type == "value")
 				{
 					String[] tabOperation = retourneOperandesEtOperation(line);
 					if(tabOperation.length > 1)
 					{
-//						String res = resOperation(tabOperation,profondeur);
-						
-//						pere.accumulate(data, res);
 						try{
 							line = reader.readLine();
 							}
@@ -670,7 +663,7 @@ public class convertCsvJson {
 							e.printStackTrace();
 						}
 							pere = gereAccumulatePourListe(pere,estListe, data,tabOperation);
-							leNomDeLaFonction(reader,line,pere,profondeur,estListe,motArray,true);
+							traitement(reader,line,pere,profondeur,estListe,motArray,true);
 						
 					}
 					else {
@@ -683,22 +676,14 @@ public class convertCsvJson {
 							e.printStackTrace();
 						}
 						
-	//					si pere est liste ou que l'element est une liste
-						
 						if(pereEstListe == true || (estListe[positionColonne(data)]>1))
 						{
-	//						System.out.println("je suis une value est mon pere une liste");
-	//						System.out.println();
-							
 							pere = gereAccumulatePourListe(pere,estListe, data);
-							leNomDeLaFonction(reader,line,pere,profondeur,estListe,motArray,true);
+							traitement(reader,line,pere,profondeur,estListe,motArray,true);
 						}
 						else
-						{
-	//						System.out.println("je suis une value est mon pere n'est pas une liste");
-	//						System.out.println();
-							
-							leNomDeLaFonction(reader,line,pere,profondeur,estListe,motArray,false);
+						{							
+							traitement(reader,line,pere,profondeur,estListe,motArray,false);
 						}
 					}
 				}
@@ -720,38 +705,16 @@ public class convertCsvJson {
 						e.printStackTrace();
 					}
 					if(estUneListe(motArray, data))
-					{	
-//						System.out.println("je suis un objet est une liste");
-//						System.out.println();
-//						
-						objets.get(objets.size()-2).accumulate(data, leNomDeLaFonction(reader,lineTransi,objets.get(objets.size()-1),profondeur,estListe,motArray,true));
+					{
+						objets.get(objets.size()-2).accumulate(data, traitement(reader,lineTransi,objets.get(objets.size()-1),profondeur,estListe,motArray,true));
 					}
 					else
 					{
-//						System.out.println("je suis un objet mais pas une liste");
-//						System.out.println();
-						objets.get(objets.size()-2).accumulate(data, leNomDeLaFonction(reader,lineTransi,objets.get(objets.size()-1),profondeur,estListe,motArray,false));
+						objets.get(objets.size()-2).accumulate(data, traitement(reader,lineTransi,objets.get(objets.size()-1),profondeur,estListe,motArray,false));
 					}
 				}
 			}
 			return pere;
-		}
-		
-		public int nombreElements()
-		{
-			BufferedReader reader;
-			String line = "";
-			try{
-				reader = new BufferedReader(new FileReader("csv.csv"));
-				line = reader.readLine();
-				
-				reader.close();
-			}
-			catch(IOException e)
-			{
-				e.printStackTrace();
-			}
-			return line.split(",").length;			
 		}
 		
 		public int[] actualiseTableauListe(int[] tab)
@@ -833,9 +796,9 @@ public class convertCsvJson {
 			return tabMot;
 		}
 		
-		public void nom()
+		public void initialisation()
 		{
-			int nbColonne = nombreColonne();
+			int nbColonne = nombreElements();
 			String[] motArray = new String[nbColonne];
 			int[] estListe = new int[nbColonne];
 			JSONObject all = new JSONObject();
@@ -860,7 +823,7 @@ public class convertCsvJson {
 					reader = new BufferedReader(new FileReader("conf.txt"));
 					String line = reader.readLine();
 					
-					all = leNomDeLaFonction(reader, line,all,profondeur,estListe,motArray,false);
+					all = traitement(reader, line,all,profondeur,estListe,motArray,false);
 					System.out.println(all);
 					
 					reader.close();
@@ -870,8 +833,6 @@ public class convertCsvJson {
 					e.printStackTrace();
 				}
 				
-				
-//			Utiliser ca obliger les include et donc impossible de accuulate mais put donc warning
 		        try {
 		        	FileWriter file = new FileWriter("employees.json");
 		            file.write(all.toString(4));

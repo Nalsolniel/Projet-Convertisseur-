@@ -7,7 +7,7 @@ public class AppJava {
 //		c.reader();
 		
 		convertCsvJson c1 = new convertCsvJson();
-		c1.nom();
+		c1.initialisation();
 //		
 //		System.out.println(Integer.parseInt("12s3"));
 
