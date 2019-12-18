@@ -1,7 +1,4 @@
-ville < ville
-telephone : 
--mobile < mobile
--fax < fax
-nom < nom
-prenom < prenom
-pays < pays
+people : 
+-Prénom < Prénom | Prénom | Prénom
+-Sexe < Sexe
+-Annéedenaissance < Annéedenaissance / "2"
