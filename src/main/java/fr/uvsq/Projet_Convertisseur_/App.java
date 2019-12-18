@@ -5,7 +5,7 @@ public class App
     public static void main( String[] args )
     {
         JSONreader r = new JSONreader("json.JSON"); 
-      // r.genConfFile();
+        r.genConfFile();
        new convert_JSON_CSV(r);
     }
 }
