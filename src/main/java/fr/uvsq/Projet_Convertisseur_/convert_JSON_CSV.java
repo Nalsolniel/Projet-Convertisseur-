@@ -22,10 +22,10 @@ public class convert_JSON_CSV
 	/*constructeur de la classe convert_JSON_CSV
 	 * prend en paramètre un JSONreader
 	 * la création de l'objet produit la traduction du fichier JSON en un fichier CSV*/
-	public convert_JSON_CSV(JSONreader r)
+	public convert_JSON_CSV(JSONreader r, String retour)
 	{
 		ArrayList<String> ligne1 = createLigne1(r);
-		File f = new File("retour.csv");
+		File f = new File(retour);
 		try 
 		{
 			//initialisation du CSVwriter
