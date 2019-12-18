@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package fr.uvsq.Projet_Convertisseur_;
 
 
