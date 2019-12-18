@@ -1,4 +1,4 @@
-people : 
--Prénom < Prénom | Prénom | Prénom
--Sexe < Sexe
--Annéedenaissance < Annéedenaissance / "2"
+members : 
+-name < name
+-age < age
+formed < formed

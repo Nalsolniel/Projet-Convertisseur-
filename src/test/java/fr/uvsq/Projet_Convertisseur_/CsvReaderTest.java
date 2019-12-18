@@ -332,8 +332,8 @@ public class CsvReaderTest {
 				MatriceElem[i]=null;
 			}
 		
-			c.verifMot(mot);
-			MatriceElem=c.verifMot(mot);
+			//c.verifMot(mot,MatriceElem);
+			MatriceElem=c.verifMot(mot,MatriceElem);
 			for (int i=9;i>-1;i--) {
 				//MatriceElem[i]=null;
 				//System.out.println(MatriceElem[i]);
@@ -357,11 +357,11 @@ public class CsvReaderTest {
 				MatriceElem[i]=null;
 			}
 		
-			MatriceElem= c.verifMot(mot);
+			MatriceElem= c.verifMot(mot,MatriceElem);
 			mot[0]="tel";
 			mot[1]="mobile";
 			
-			MatriceElem=c.verifMot(mot);
+			MatriceElem=c.verifMot(mot,MatriceElem);
 			for (int i=9;i>-1;i--) {
 				//MatriceElem[i]=null;
 				System.out.println(MatriceElem[i]);

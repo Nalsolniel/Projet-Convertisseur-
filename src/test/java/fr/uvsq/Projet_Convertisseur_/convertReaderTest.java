@@ -270,7 +270,7 @@ public class convertReaderTest {
 	
 	// nombreColonne
 	//public int nombreColonne()
-	@Test
+/*	@Test
 	public final void TestnombreColonne() {
 		int res=0;
 		convertCsvJson c =new convertCsvJson();
@@ -290,7 +290,7 @@ public class convertReaderTest {
 		assertEquals(res,4);
 	}
 	
-	
+	*/
 	//typeLecture 
 	//public String typeLecture(String line)
 	@Test
