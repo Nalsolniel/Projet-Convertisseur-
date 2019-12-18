@@ -117,7 +117,6 @@ public class JSONreader
 							dejaVu.set(k, tmp);
 						}
 					}
-
 					k = k + 1;
 				}
 				if(stop == 0)

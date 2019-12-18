@@ -6,6 +6,6 @@ public class App
     {
         JSONreader r = new JSONreader("json.JSON"); 
       // r.genConfFile();
-       convert_JSON_CSV conv = new convert_JSON_CSV(r);
+       new convert_JSON_CSV(r);
     }
 }
