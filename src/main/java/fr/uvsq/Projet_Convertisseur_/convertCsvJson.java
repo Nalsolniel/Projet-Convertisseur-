@@ -7,11 +7,22 @@ import org.json.*;
 
 public class convertCsvJson {
 	
+	String fichierCSV = " ";
+	String fichierJSON = " ";
 	List<String> list = new ArrayList<String>(); //stock le nom des objets json en cours d'utilisation
 	List<JSONObject> objets = new ArrayList<JSONObject>();	//stock les objets json en cours d'utilisation
-	int[] profondeurActuel = new int[nombreElements()]; //tableau contenant la profondeur actuelle de chaque element c'est à dire
+	int[] profondeurActuel;  //tableau contenant la profondeur actuelle de chaque element c'est à dire
 														//dans quelle ligne du fichier .csv nous somme en train de lire
-	
+		public void initPronfActuel()
+		{
+			profondeurActuel = new int[nombreElements()];
+		}
+		
+		public void initfichierCSVEtJSON(String csv,String json)
+		{
+			fichierCSV = csv;
+			fichierJSON = json;
+		}
 //		fonction qui va s'occupper de la gestion des listes afin de garder toujours le chemin absolu courant
 		public void gestionList(String data,JSONObject obj) 
 		{
@@ -121,11 +132,10 @@ public class convertCsvJson {
 			
 			try{
 				
-				FileReader fr = new FileReader("csv.csv");
+				FileReader fr = new FileReader(fichierCSV);
 				CSVReader reader = new CSVReader(fr);
 				
 				line = reader.readNext();
-
 				reader.close();
 			}
 			catch(FileNotFoundException e)
@@ -146,14 +156,15 @@ public class convertCsvJson {
 			BufferedReader reader;
 			String line = "";
 			try{
-				reader = new BufferedReader(new FileReader("csv.csv"));
+				
+				reader = new BufferedReader(new FileReader(fichierCSV));
 				line = reader.readLine();
 				
 				reader.close();
 			}
 			catch(IOException e)
 			{
-				e.printStackTrace();
+				System.out.println();
 			}
 			return line.split(",").length;			
 		}
@@ -205,7 +216,7 @@ public class convertCsvJson {
 			String[] line = null;
 			try{
 				
-				FileReader fr = new FileReader("csv.csv");
+				FileReader fr = new FileReader(fichierCSV);
 				CSVReader reader = new CSVReader(fr);
 				
 				line = reader.readNext();
@@ -247,7 +258,7 @@ public class convertCsvJson {
 				
 				try{
 					
-					FileReader fr = new FileReader("csv.csv");
+					FileReader fr = new FileReader(fichierCSV);
 					reader = new CSVReader(fr);
 					
 				 ligne = reader.readNext();
@@ -289,7 +300,7 @@ public class convertCsvJson {
 			
 			try{
 				
-				FileReader fr = new FileReader("csv.csv");
+				FileReader fr = new FileReader(fichierCSV);
 				CSVReader reader = new CSVReader(fr);
 				
 				ligne = reader.readNext();
@@ -333,7 +344,8 @@ public class convertCsvJson {
 			{
 				tabOperationTransition[cpt] = tabOperation[cpt];
 			}
-			
+			System.out.println(profondeur.length);
+			System.out.println(profondeurActuel.length);
 			for(int i=0;i<profondeur.length;i++)
 			{
 				profondeurActuel[i] = 1;
@@ -341,7 +353,7 @@ public class convertCsvJson {
 			
 			try{
 				
-				FileReader fr = new FileReader("csv.csv");
+				FileReader fr = new FileReader(fichierCSV);
 				CSVReader reader = new CSVReader(fr);
 				
 				ligne = reader.readNext();
@@ -443,9 +455,10 @@ public class convertCsvJson {
 				else
 				{
 					sVal1 = tab1.substring(1,tab1.length()-1);
+					System.out.println(sVal1);
 					val1 = Integer.parseInt(sVal1); 
 				}
-				if(tab2.charAt(0) != '"' && tab2.charAt(tab1.length()-1) != '"')
+				if(tab2.charAt(0) != '"' && tab2.charAt(tab2.length()-1) != '"')
 				{
 					sVal2 = extractDataCsvListeOperateur(profondeur,tab2);
 					val2 = Integer.parseInt(sVal2);
@@ -491,7 +504,7 @@ public class convertCsvJson {
 					sVal1 = tab1.substring(1,tab1.length()-1);
 					val1 = Integer.parseInt(sVal1); 
 				}
-				if(tab2.charAt(0) != '"' && tab2.charAt(tab1.length()-1) != '"')
+				if(tab2.charAt(0) != '"' && tab2.charAt(tab2.length()-1) != '"')
 				{
 					sVal2 = extractDataCsvListeOperateur(profondeur,tab2);
 					val2 = Integer.parseInt(sVal2);
@@ -537,7 +550,7 @@ public class convertCsvJson {
 					sVal1 = tab1.substring(1,tab1.length()-1);
 					val1 = Integer.parseInt(sVal1); 
 				}
-				if(tab2.charAt(0) != '"' && tab2.charAt(tab1.length()-1) != '"')
+				if(tab2.charAt(0) != '"' && tab2.charAt(tab2.length()-1) != '"')
 				{
 					sVal2 = extractDataCsvListeOperateur(profondeur,tab2);
 					val2 = Integer.parseInt(sVal2);
@@ -583,7 +596,7 @@ public class convertCsvJson {
 					sVal1 = tab1.substring(1,tab1.length()-1);
 					val1 = Integer.parseInt(sVal1); 
 				}
-				if(tab2.charAt(0) != '"' && tab2.charAt(tab1.length()-1) != '"')
+				if(tab2.charAt(0) != '"' && tab2.charAt(tab2.length()-1) != '"')
 				{
 					sVal2 = extractDataCsvListeOperateur(profondeur,tab2);
 					val2 = Integer.parseInt(sVal2);
@@ -724,7 +737,7 @@ public class convertCsvJson {
 			
 			try{
 				
-				FileReader fr = new FileReader("csv.csv");
+				FileReader fr = new FileReader(fichierCSV);
 				CSVReader reader = new CSVReader(fr);
 				
 				line = reader.readNext();
@@ -763,7 +776,7 @@ public class convertCsvJson {
 			
 			try{
 				
-				FileReader fr = new FileReader("csv.csv");
+				FileReader fr = new FileReader(fichierCSV);
 				CSVReader reader = new CSVReader(fr);
 				
 				line = reader.readNext();
@@ -796,8 +809,11 @@ public class convertCsvJson {
 			return tabMot;
 		}
 		
-		public void initialisation()
+		public void initialisation(String fichierLecture,String fichierRetour)
 		{
+			initfichierCSVEtJSON(fichierLecture,fichierRetour);
+			initPronfActuel();
+			
 			int nbColonne = nombreElements();
 			String[] motArray = new String[nbColonne];
 			int[] estListe = new int[nbColonne];
@@ -834,7 +850,7 @@ public class convertCsvJson {
 				}
 				
 		        try {
-		        	FileWriter file = new FileWriter("employees.json");
+		        	FileWriter file = new FileWriter(fichierRetour);
 		            file.write(all.toString(4));
 		            file.flush();
 		            file.close();
@@ -852,7 +868,7 @@ public class convertCsvJson {
 			String[] line = null;
 			try{
 				
-				FileReader fr = new FileReader("csv.csv");
+				FileReader fr = new FileReader(fichierCSV);
 				CSVReader reader = new CSVReader(fr);
 				
 				line = reader.readNext();
@@ -888,7 +904,7 @@ public class convertCsvJson {
 			String[] line = null;
 			try{
 				
-				FileReader fr = new FileReader("csv.csv");
+				FileReader fr = new FileReader(fichierCSV);
 				CSVReader reader = new CSVReader(fr);
 				
 				line = reader.readNext();

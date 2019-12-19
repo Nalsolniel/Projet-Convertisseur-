@@ -16,13 +16,16 @@ import au.com.bytecode.opencsv.CSVReader;
 public class convertReaderTest {
 
 
-	// actualiseTableauListe +exeption 
+	// actualiseTableauListe 
 	//public int[] actualiseTableauListe(int[] tab)
 	@Test
 	public final void TestTrueactualiseTableauListe() {
 		
-		
+		csvReader cr = new csvReader();
+		cr.reader("bonsoir.txt");
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+		
 		int[] tab =new int[4];
 		
 		
@@ -31,6 +34,10 @@ public class convertReaderTest {
 		}
 		tab=c.actualiseTableauListe(tab);
 		//3311
+		for(int i=0;i<4;i++) {
+			//tab[i]=0;
+			System.out.println(tab[i]);
+		}
 		if(tab[0]==3) {
 			if(tab[1]==3) {
 				if(tab[2]==1) {
@@ -49,6 +56,8 @@ public class convertReaderTest {
 	@Test
 	public final void TestTrueactualiseTableauMotArray() {
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
 		int[] tab =new int[4];
 		for(int i=0;i<4;i++) {
 			tab[i]=0;
@@ -91,6 +100,8 @@ public class convertReaderTest {
 	@Test
 	public final void TestTrueafficheList() {
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
 		c.afficheList();
 	}
 	
@@ -99,7 +110,8 @@ public class convertReaderTest {
 	@Test
 	public final void TestTrueconcatString() {
 		convertCsvJson c =new convertCsvJson();
-		
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
 		try{
 			FileReader fr = new FileReader("csv.csv");
 			CSVReader reader = new CSVReader(fr);
@@ -113,7 +125,9 @@ public class convertReaderTest {
 			data=c.concatString(data);
 			
 		boolean tmp=line[2].equals(data);
-			
+		System.out.println(data);
+		System.out.println(line[2]);
+		assertTrue(line[2].equals(data));
 						assertEquals(tmp,true);
 			
 		} 
@@ -133,6 +147,9 @@ public class convertReaderTest {
 	@Test
 	public final void TestTrueestUneListe() {
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
+		
 		int[] tab =new int[4];
 		for(int i=0;i<4;i++) {
 			tab[i]=0;
@@ -161,6 +178,8 @@ public class convertReaderTest {
 	@Test
 	public final void TestfalseestUneListe() {
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
 		int[] tab =new int[4];
 		for(int i=0;i<4;i++) {
 			tab[i]=0;
@@ -192,6 +211,8 @@ public class convertReaderTest {
 	@Test
 	public final void TetsTrueextractDataConfig() {
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
 		String line=new String();
 		line="-mobile < mobile";
 				line=c.extractDataConfig(line);
@@ -202,6 +223,8 @@ public class convertReaderTest {
 	@Test
 	public final void Tets2TrueextractDataConfig() {
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
 		String line=new String();
 		line="---mobile < mobile";
 				line=c.extractDataConfig(line);
@@ -213,6 +236,8 @@ public class convertReaderTest {
 	@Test
 	public final void TetsTrueextractDataConfigWithDepth() {
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
 		String line=new String();
 		line="---mobile < mobile";
 				line=c.extractDataConfigWithDepth(line);
@@ -225,6 +250,8 @@ public class convertReaderTest {
 	@Test
 	public final void TetsTrueextractDataCsv() {
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
 		
 		try{
 			FileReader fr = new FileReader("csv.csv");
@@ -249,6 +276,8 @@ public class convertReaderTest {
 	@Test
 	public final void TetsTrueextractDataWithoutDepth() {
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
 		String line=new String();
 		line="---mobile < mobile";
 				line=c.extractDataWithoutDepth(line);
@@ -296,6 +325,8 @@ public class convertReaderTest {
 	@Test
 	public final void TestTruetypeLecture() {
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
 		String line =new String ();
 		boolean r;
 		line="-mobile < mobile";
@@ -306,6 +337,8 @@ public class convertReaderTest {
 	@Test
 	public final void Test2TruetypeLecture() {
 		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+
 		String line =new String ();
 		boolean r;
 		line="tel : ";

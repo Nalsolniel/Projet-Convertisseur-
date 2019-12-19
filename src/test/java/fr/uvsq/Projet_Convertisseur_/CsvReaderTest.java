@@ -23,6 +23,7 @@ public class CsvReaderTest {
 		@Test 
 		public final void  TestTruetraitementFini(){
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			boolean[] tab= new boolean[10];
 			for (int i=0;i<10;i++) {
 				tab[i]=true;
@@ -33,6 +34,7 @@ public class CsvReaderTest {
 		@Test 
 		public final void  TestFalsetraitementFini(){
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			boolean[] tab= new boolean[10];
 			for (int i=0;i<10;i++) {
 				tab[i]=true;
@@ -49,6 +51,7 @@ public class CsvReaderTest {
 		@Test
 		public final void TestTruecasePlusPetitElement() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			boolean[] tab= new boolean[10];
 			String[] MatriceElem= new String[10];
 			for (int i=0;i<10;i++) {
@@ -64,6 +67,7 @@ public class CsvReaderTest {
 		@Test
 		public final void TestTabTruecasePlusPetitElement() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			boolean[] tab= new boolean[10];
 			String[] MatriceElem= new String[10];
 			for (int i=0;i<10;i++) {
@@ -80,6 +84,7 @@ public class CsvReaderTest {
 		@Test
 		public final void Test2TruecasePlusPetitElement() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			boolean[] tab= new boolean[10];
 			String[] MatriceElem= new String[10];
 			for (int i=0;i<10;i++) {
@@ -100,6 +105,7 @@ public class CsvReaderTest {
 		@Test
 		public final void TestTrueecrireMotPareilActualiserMatriceBoolean() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			boolean[] tab= new boolean[10];
 			
 			
@@ -115,28 +121,36 @@ public class CsvReaderTest {
 			MatriceElem[3]="tel_fixe";
 
 			File f = new File("conf.txt");
+			
+			
+			
+			
 			try 
 			{
+			
+				
 				f.createNewFile();
 				FileWriter write = new FileWriter(f);
+			
 			c.ecrireMotPareilActualiserMatriceBoolean(MatriceElem,tab,write);
 			
 			write.close();
-			}
-			catch (IOException e) 
-			{
-				e.printStackTrace();
-			}
+			
 		
+			
+			
 			if(tab[1]==true) {
 				if(tab[2]==true) {
 					assertEquals(tab[3],true);
 					
 				}
 			}
-			else {
-				fail("test echoué"); 
 			}
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		
 		}
 		
 		
@@ -145,6 +159,7 @@ public class CsvReaderTest {
 		@Test 
 		public final void TestrgenConfFile() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			String[] MatriceElem= new String[10];
 			for (int i=0;i<10;i++) {
 				MatriceElem[i]=null;
@@ -169,6 +184,7 @@ public class CsvReaderTest {
 		@Test
 		public final void TestTruepeutEcrire() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			String mot =new String();
 			mot="nom";
 			boolean[] tab= new boolean[10];
@@ -189,6 +205,7 @@ public class CsvReaderTest {
 		@Test
 		public final void TestfalsepeutEcrire() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			String mot =new String();
 			mot="tel_fixe";
 			boolean[] tab= new boolean[10];
@@ -210,7 +227,8 @@ public class CsvReaderTest {
 		@Test 
 		public final void Testresder() {
 			csvReader c = new csvReader();
-			c.reader();
+			c.initFichierCSV("csv.csv");
+			c.reader("csv.csv");
 			
 		}
 		
@@ -220,6 +238,7 @@ public class CsvReaderTest {
 		@Test
 		public final void TestTrueselectTab() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			int ok=1;
 			boolean[] tab= new boolean[10];
 			String[] MatriceElem= new String[10];
@@ -256,6 +275,7 @@ public class CsvReaderTest {
 		@Test
 		public final void TestFalseselectTab() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			int ok=1;
 			boolean[] tab= new boolean[10];
 			String[] MatriceElem= new String[10];
@@ -295,6 +315,7 @@ public class CsvReaderTest {
 		@Test
 		public final void TestTruetailleMaxElementTableau() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			int ok=1;
 			
 			String[] MatriceElem= new String[10];
@@ -322,6 +343,7 @@ public class CsvReaderTest {
 		@Test
 		public final void TestTrueVerifmot() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			String[] mot =new String[2];
 			mot[0]="tel";
 			mot[1]="fixe";
@@ -341,12 +363,13 @@ public class CsvReaderTest {
 					nb+=1;
 				}
 			}
-			System.out.println(nb);
+		//	System.out.println(nb);
 			assertEquals(nb,2);
 		}
 		@Test
 		public final void Test2TrueVerifmot() {
 			csvReader c = new csvReader();
+			c.initFichierCSV("csv.csv");
 			String[] mot =new String[2];
 			mot[0]="tel";
 			mot[1]="fixe";
@@ -364,12 +387,12 @@ public class CsvReaderTest {
 			MatriceElem=c.verifMot(mot,MatriceElem);
 			for (int i=9;i>-1;i--) {
 				//MatriceElem[i]=null;
-				System.out.println(MatriceElem[i]);
+				//System.out.println(MatriceElem[i]);
 				if(MatriceElem[i]!=null) {
 					nb+=1;
 				}
 			}
-			System.out.println(nb);
+			//System.out.println(nb);
 		//	assertEquals(nb,3);
 		}
 		

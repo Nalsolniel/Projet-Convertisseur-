@@ -5,10 +5,18 @@ import java.io.*;
 
 public class csvReader {
 	
-	public void reader()
+	String fichierCSV = null;
+	
+	public void initFichierCSV(String fichierLecture)
 	{
+		fichierCSV = fichierLecture;
+	}
+	
+	public void reader(String fichierLecture)
+	{
+		initFichierCSV(fichierLecture);
 		try {
-			FileReader fr = new FileReader("csv.csv");
+			FileReader fr = new FileReader(fichierLecture);
 			CSVReader reader = new CSVReader(fr);	
 			
 			/* On prend la premiere ligne du fichier csv */
@@ -16,13 +24,6 @@ public class csvReader {
 			String[] line= reader.readNext();
 			genConfFile(line);
 			
-			/* On prend toutes les autres lignes */
-			
-			while((line = reader.readNext()) != null)
-				{
-					for (int x=0; x<line.length; x++);
-				}
-		
 			reader.close();
 		}
 		catch(FileNotFoundException e)
@@ -115,7 +116,7 @@ public class csvReader {
 	{
 		int taille = 0;
 		try {
-			FileReader fr = new FileReader("csv.csv");
+			FileReader fr = new FileReader(fichierCSV);
 			CSVReader reader = new CSVReader(fr);	
 			
 			/* On prend la premiere ligne du fichier csv */
