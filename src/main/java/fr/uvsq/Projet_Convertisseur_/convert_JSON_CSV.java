@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.Stack;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import au.com.bytecode.opencsv.CSVWriter;
@@ -311,6 +312,9 @@ public class convert_JSON_CSV
 		catch (NumberFormatException nfe) 
 		{
 			System.out.println("la colonne " + "n'est pas composé d'entier" );
+		} catch (divZeroException e) 
+		{
+			System.out.println("division par zero impossible");		
 		}
 	}
 	
@@ -320,12 +324,13 @@ public class convert_JSON_CSV
 	{
 		int colonne = getColonne(chemin,val,0);
 		int colonneCVS = getColonne(chemin,add,1);
-		int i,valu;
+		int i;
+		double valu;
 		for(i=1;i<obj.size();i++)
 		{
 			if(obj.get(i)[colonne] != null && CSV.get(i)[colonneCVS] != null)
 			{
-				valu = Integer.parseInt(obj.get(i)[colonne]) + Integer.parseInt(obj.get(i)[colonne]);
+				valu = Double.parseDouble(obj.get(i)[colonne]) + Double.parseDouble(obj.get(i)[colonne]);
 				CSV.get(i)[colonneCVS] = "" + valu;
 			}
 		}
@@ -337,12 +342,13 @@ public class convert_JSON_CSV
 	{
 		int colonne = getColonne(chemin,val,0);
 		int colonneCVS = getColonne(chemin,add,1);
-		int i,valu;
+		int i;
+		double valu;
 		for(i=1;i<obj.size();i++)
 		{
 			if(obj.get(i)[colonne] != null && CSV.get(i)[colonneCVS] != null)
 			{
-				valu = Integer.parseInt(obj.get(i)[colonne]) - Integer.parseInt(obj.get(i)[colonne]);
+				valu = Double.parseDouble(obj.get(i)[colonne]) - Double.parseDouble(obj.get(i)[colonne]);
 				CSV.get(i)[colonneCVS] = "" + valu;
 			}
 		}
@@ -354,12 +360,13 @@ public class convert_JSON_CSV
 	{
 		int colonne = getColonne(chemin,val,0);
 		int colonneCVS = getColonne(chemin,add,1);
-		int i,valu;
+		int i;
+		double valu;
 		for(i=1;i<obj.size();i++)
 		{
 			if(obj.get(i)[colonne] != null && CSV.get(i)[colonneCVS] != null)
 			{
-				valu = Integer.parseInt(obj.get(i)[colonne]) * Integer.parseInt(obj.get(i)[colonne]);
+				valu = Double.parseDouble(obj.get(i)[colonne]) * Double.parseDouble(obj.get(i)[colonne]);
 				CSV.get(i)[colonneCVS] = "" + valu;
 			}
 		}
@@ -367,16 +374,21 @@ public class convert_JSON_CSV
 	
 	/*aplication de la division sur une colonne
 	 * return l'exception NumberFormatException si l'une des deux opérande ne sont pas des entiers*/
-	private void div(Stack<String> chemin, String val, String add)
+	private void div(Stack<String> chemin, String val, String add) throws divZeroException
 	{
 		int colonne = getColonne(chemin,val,0);
 		int colonneCVS = getColonne(chemin,add,1);
-		int i,valu;
+		int i;
+		double valu;
 		for(i=1;i<obj.size();i++)
 		{
 			if(obj.get(i)[colonne] != null && CSV.get(i)[colonneCVS] != null)
 			{
-				valu = Integer.parseInt(obj.get(i)[colonne]) / Integer.parseInt(obj.get(i)[colonne]);
+				if(Double.parseDouble(obj.get(i)[colonne]) == 0)
+				{
+					throw new divZeroException();
+				}
+				valu = Double.parseDouble(obj.get(i)[colonne]) / Double.parseDouble(obj.get(i)[colonne]);
 				CSV.get(i)[colonneCVS] = "" + valu;
 			}
 		}
@@ -584,12 +596,11 @@ public class convert_JSON_CSV
 			obj.add(new String[obj.get(0).length]);
 		}
 		if(res != -1)
-		{
+		{System.out.println(j.getClass());
 			//ajout d'un JSONObject 
 			if(j instanceof JSONObject)
 			{
-				JSONObject ret = (JSONObject) j;
-				obj.get(ligne)[res] = ret.getString(pathObj.get(pathObj.size()-1));
+				evalJsonObject(ligne, j, pathObj, res);
 			}
 			//ajout d'un String
 			else if(j instanceof String)
@@ -597,11 +608,32 @@ public class convert_JSON_CSV
 				String ret = (String) j;
 				obj.get(ligne)[res] = ret;
 			}
-			//ajout d'un entier
-			else if(j instanceof Integer)
+		}
+	}
+	
+	private void evalJsonObject(int ligne, Object j, Stack<String> pathObj,int res)
+	{
+		JSONObject ret = (JSONObject) j;
+		try
+		{
+			obj.get(ligne)[res] = ret.getString(pathObj.get(pathObj.size()-1));
+		}
+		catch(JSONException e)
+		{
+			try
 			{
-				Integer ret = (Integer) j;
-				obj.get(ligne)[res] = "" + ret;
+				obj.get(ligne)[res] = "" + ret.getLong(pathObj.get(pathObj.size()-1));
+			}
+			catch(JSONException e1)
+			{
+				try 
+				{
+					obj.get(ligne)[res] = "" + ret.getBoolean(pathObj.get(pathObj.size()-1));
+				}
+				catch(JSONException e2)
+				{
+					obj.get(ligne)[res] = "" + ret.getDouble(pathObj.get(pathObj.size()-1));
+				}
 			}
 		}
 	}
