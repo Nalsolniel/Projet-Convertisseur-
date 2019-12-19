@@ -12,12 +12,15 @@ public class convertCsvJson {
 	List<String> list = new ArrayList<String>(); //stock le nom des objets json en cours d'utilisation
 	List<JSONObject> objets = new ArrayList<JSONObject>();	//stock les objets json en cours d'utilisation
 	int[] profondeurActuel;  //tableau contenant la profondeur actuelle de chaque element c'est à dire
-														//dans quelle ligne du fichier .csv nous somme en train de lire
+							//dans quelle ligne du fichier .csv nous somme en train de lire
+		
+	
 		public void initPronfActuel()
 		{
 			profondeurActuel = new int[nombreElements()];
 		}
 		
+		//Initialise le nom du fichier json et du fichier csv qui ont été demandé durant l'exécution du programme
 		public void initfichierCSVEtJSON(String csv,String json)
 		{
 			fichierCSV = csv;
@@ -136,6 +139,7 @@ public class convertCsvJson {
 				CSVReader reader = new CSVReader(fr);
 				
 				line = reader.readNext();
+
 				reader.close();
 			}
 			catch(FileNotFoundException e)
@@ -382,7 +386,8 @@ public class convertCsvJson {
 			
 			return pere;
 		}
-	
+		
+		//Retourne la ligne contenant la ligne de l'opération à effectuer
 		public String[] retourneOperandesEtOperation(String line)
 		{
 			String[] tab = new String[line.split(" ").length-2];
@@ -409,6 +414,7 @@ public class convertCsvJson {
 			
 			return tab;
 		}
+		
 		
 		public String operationConcatenation(String tab1,String tab2,int[] profondeur,int ope)
 		{
@@ -611,6 +617,8 @@ public class convertCsvJson {
 			
 		}
 		
+		//Retourne le résultat de l'opération de toute la ligne
+		
 		public String resOperation(String[] tabOperation,int[] profondeur)
 		{
 			int ope =0;
@@ -640,6 +648,9 @@ public class convertCsvJson {
 			return tabOperation[ope-1];
 		}
 			
+		
+		//Fonction récursive qui va lire chaque ligne du fichier de configuration est accumulate
+		//les bonnes données et valeurs pour générer le fichier json
 		public JSONObject traitement(BufferedReader reader,String line,JSONObject pere,int[] profondeur,int[] estListe,String[] motArray,boolean pereEstListe)
 		{
 			if(line == null)
@@ -794,6 +805,9 @@ public class convertCsvJson {
 			return tabMot;
 		}
 		
+		
+		//Va donnée la main à la fonction traitement afin d'accumulate le reste des données
+		//Apres avoir initialisée des tableaux et valeur;
 		public void initialisation(String fichierLecture,String fichierRetour)
 		{
 			initfichierCSVEtJSON(fichierLecture,fichierRetour);
@@ -846,6 +860,8 @@ public class convertCsvJson {
 		}
 		
 		
+		//Retourne la valeur contenue dans le csv de la donnée lue dans le fichier de configuration dans le cas
+		//D'une liste
 		public String extractDataCsvListeOperateur(int[] profondeur,String data)
 		{
 			int colonne = 0;
@@ -881,6 +897,8 @@ public class convertCsvJson {
 			}
 			return line[colonne];
 		}
+		
+		//Retourne la valeur contenue dans le csv de la donnée lue dans le fichier de configuration
 
 		public String extractDataCsv(int[] profondeur,String data)
 		{

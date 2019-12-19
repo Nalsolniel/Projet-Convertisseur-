@@ -345,5 +345,13 @@ public class convertReaderTest {
 		line=c.typeLecture(line);
 		r=line.equals("object");
 		assertEquals(r,true);
-	}	
+	}
+	
+	//operationConcatenation
+	//public String operationConcatenation(String tab1,String tab2,int[] profondeur,int ope)
+	
+	@Test
+	public final void TestTrueOperationConcatenation() {
+		
+	}
 }

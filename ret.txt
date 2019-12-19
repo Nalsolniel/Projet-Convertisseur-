@@ -1,0 +1,27 @@
+{"Personne": {
+    "Prenom": [
+        "Kevin",
+        "Thibault",
+        "Charles"
+    ],
+    "Telephone": {
+        "Travail": [
+            "3",
+            "6"
+        ],
+        "Fax": [
+            "2",
+            "5"
+        ],
+        "Mobile": [
+            "1",
+            "4",
+            "7"
+        ]
+    },
+    "Nom": [
+        "DUPONT",
+        "MOKERY",
+        "BODERY"
+    ]
+}}

@@ -7,6 +7,7 @@ public class csvReader {
 	
 	String fichierCSV = null;
 	
+	//Initialise le nom du fichier csv qui a été demandé durant l'exécution du programme
 	public void initFichierCSV(String fichierLecture)
 	{
 		fichierCSV = fichierLecture;
@@ -36,7 +37,7 @@ public class csvReader {
 		}
 	}
 	
-	
+	//Verifie si le tableau passé en parametre ne contient que true ou non
 	public boolean traitementFini(boolean[] matriceTraitee)
 	{
 		for(int i=0;i<matriceTraitee.length;i++) {
@@ -142,6 +143,7 @@ public class csvReader {
 		return taille;
 	}
 	
+	//Actualise la blacklist
 	public String[] verifMot(String[] transition,String[] TabBlackList)
 	{
 		boolean blackList = true;
@@ -163,6 +165,7 @@ public class csvReader {
 		return TabBlackList;
 	}
 	
+	//SI le mot est dans la blacklist return false sinon true
 	public boolean peutEcrire(String[] blackList,String mot)
 	{
 		
@@ -175,6 +178,7 @@ public class csvReader {
 		return true;
 	}
 	
+	//Recherche la case de l'élément avec la plus petite profondeur
 	public int casePlusPetitElement(String[] matriceATraitee,boolean[] matriceTraitee)
 	{
 			
@@ -203,8 +207,8 @@ public class csvReader {
 		return casePronfMin;
 	}
 	
-	
-	
+	//Ecrit tout les mots commençant par la même chose de celui ayant la plus petite profondeur
+	// à celui avec la plus grosse.
 	public void ecrireMotPareilActualiserMatriceBoolean(String[] matriceATraitee,boolean[] matriceTraitee,FileWriter write)
 	{
 		String[] blackList = new String[tailleMaxPourTableauBlacklist()];
@@ -281,7 +285,7 @@ public class csvReader {
 		}
 	}
 	
-	
+	//Genere le fichier de configuration
 	public void genConfFile(String[] header)
 	{
 		
