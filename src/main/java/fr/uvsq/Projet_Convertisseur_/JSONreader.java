@@ -17,7 +17,7 @@ public class JSONreader
 	JSONObject j;
 	
 	JSONreader(String name) 
-	{
+	{ 
 		BufferedReader file;
 		String str = "";
 		try 
@@ -141,7 +141,7 @@ public class JSONreader
 				if(var == 0)
 				{
 					String indent = "";
-					int it;
+					int it; 
 					for(it=0;it<depth;it++)
 					{
 						indent =  indent + "-";
@@ -158,7 +158,7 @@ public class JSONreader
 	
 	
 	public void suiv(JSONArray j)
-	{
+	{ 
 		int length = j.length();
 		int i;
 		for(i=0; i<length; i++)

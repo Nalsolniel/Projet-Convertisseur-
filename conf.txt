@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Personne : 
 -Prenom < Prenom
 -Nom < Nom
@@ -5,3 +6,9 @@ Personne :
 --Mobile < Mobile + Fax | Travail
 --Fax < Fax
 --Travail < Travail * Fax
+=======
+members : 
+-name < name
+-age < age
+formed < formed
+>>>>>>> thibault

@@ -136,7 +136,6 @@ public class convertCsvJson {
 				CSVReader reader = new CSVReader(fr);
 				
 				line = reader.readNext();
-
 				reader.close();
 			}
 			catch(FileNotFoundException e)
