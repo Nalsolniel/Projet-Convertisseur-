@@ -4,7 +4,7 @@ LAPEGUE Thibault 21600458
 
 MANUEL UTILISATEUR
 
-L'application se lance via le termianl grâce à la commande "java -jar" on va ensuite être invité à choisir si l'on veut effectuer une conversion d'un fichier JSON vers un fichier CSV ou bien d'un fichier CSV en fichier JSON, il faudra par la suite donner le nom du fichier à convertir. 
+L'application se lance via le termianl grâce à la commande "java -jar target\mon_projet-0-executable.jar" on va ensuite être invité à choisir si l'on veut effectuer une conversion d'un fichier JSON vers un fichier CSV ou bien d'un fichier CSV en fichier JSON, il faudra par la suite donner le nom du fichier à convertir. 
 On va par la suite  être notifié de la création d'un fichier de configuration qui est modifiable pour par exemple réaliser la concatenation de plusieurs valeurs.
 L'application va enfin demander le nom du fichier de retour et écrire à l'interieur.
 
@@ -57,3 +57,14 @@ Dans le cas d'un objet on va aussi distinguer deux cas, celui ou l'objet est une
 Dans le cas d'une valeur on va faire presque la même chose, on va distinguer le cas ou la valeur est simple, et non (une valeur est non simple si elle a éte modifié dans le fichier de configuration). De plus dans le cas ou la valeur est simple on fait une distinction entre celle dont le pere ou elle même sont des listes ou non.
 
 On obtient à la fin un objet JSON contenant l'accumlation de tout, on l'écrit donc dans le fichier.
+
+rejet JSON
+
+-la conversion de json vers csv ne prend pas en compte une liste d'object simmilaire ayant en argument un tableau 
+exemple
+{"val":
+	[
+		{"res":[...]}
+		{"res":[...]}
+	]
+}
