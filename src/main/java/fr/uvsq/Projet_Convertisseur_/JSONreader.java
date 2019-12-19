@@ -12,6 +12,8 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/*constructeur de la class JSONreader
+ * prend en argument un String contenant le nom du fichier JSON et crée un JSONObject j*/
 public class JSONreader 
 {
 	JSONObject j;
@@ -20,6 +22,7 @@ public class JSONreader
 	{ 
 		BufferedReader file;
 		String str = "";
+		//lecture du fichier 
 		try 
 		{
 			file = new BufferedReader(new FileReader(name));
@@ -38,12 +41,16 @@ public class JSONreader
 		{ 
 			e.printStackTrace();
 		}
+		//création du json object 
 		j = new JSONObject(str);
 	}
 	
+	/*récupération du JSONobject*/
 	public JSONObject getJASON()
 	{return j;}
 	
+	
+	/*création du fichier de configuration*/
 	public void genConfFile()
 	{
 		String res = "";
@@ -62,6 +69,7 @@ public class JSONreader
 		}
 	}
 	
+	/*parcours d'un objet JSON pour produire le fichier de configuration*/
 	public String genConfString(JSONObject j, int depth,String res)
 	{
 		Set<String> s = j.keySet();
@@ -89,6 +97,7 @@ public class JSONreader
 		return res;
 	}
 	
+	/*création du fichier de configuration a partir d'une JSONArray*/
 	public String Confsuiv(JSONArray j, int depth,String res)
 	{
 		int length = j.length();
@@ -99,6 +108,7 @@ public class JSONreader
 		ArrayList<JSONObject> dejaVu = new ArrayList<JSONObject>();
 		for(i=0; i<length; i++)
 		{
+			//traitement d'un JSON pour crée le fichier de configuration
 			if(j.get(i) instanceof JSONObject) 
 			{
 				JSONObject tmp = (JSONObject) j.get(i);
@@ -125,6 +135,7 @@ public class JSONreader
 					dejaVu.add(tmp);
 				}
 			}
+			//traitement d'un JSONArray pour générer un fuchier de configuration
 			else if(j.get(i) instanceof JSONArray)
 			{
 				String indent = "";
@@ -136,6 +147,7 @@ public class JSONreader
 				res = res + indent + i + " :\n";
 				res = Confsuiv(j.getJSONArray(i), depth+1, res);
 			}
+			//évaluation d'un int, float, double, boolean
 			else
 			{
 				if(var == 0)
@@ -154,9 +166,7 @@ public class JSONreader
 		return res;		
 	}
 	
-	
-	
-	
+	/*fonction qui affiche une JSONArray*/
 	public void suiv(JSONArray j)
 	{ 
 		int length = j.length();
@@ -181,7 +191,7 @@ public class JSONreader
 		}
 				
 	}
-	
+	/*fonction qui affiche un JSONObject */
 	public void aff(JSONObject j)
 	{
 		Set<String> s = j.keySet();
