@@ -347,11 +347,122 @@ public class convertReaderTest {
 		assertEquals(r,true);
 	}
 	
-	//operationConcatenation
-	//public String operationConcatenation(String tab1,String tab2,int[] profondeur,int ope)
+	//nombreElements
+	//public int nombreElements()
+	@Test
+	public final void TestEqualsNombreElements(){
+		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+		
+		assertEquals(c.nombreElements(),3);
+	}
+	
+	//positionColonne
+	//public int positionColonne(String data)
+	@Test
+	public final void TestEqualsPositionColonne(){
+		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+		
+		assertEquals(c.positionColonne("people_Sexe"),0);
+	}
+	
+	//retourneOperandesEtOperation
+	//public String[] retourneOperandesEtOperation(String line)
+	@Test
+	public final void TestEqualsRetourneOperandesEtOperation(){
+		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+		
+		String[] line = c.retourneOperandesEtOperation("id < id | value");
+		String res1 = "id";
+		String res2 = "|";
+		String res3 = "value";
+
+		assertEquals(line[0],res1);
+		assertEquals(line[1],res2);
+		assertEquals(line[2],res3);
+	}
+	
+	//operationAddition
+	//public String operationAddition(String tab1,String tab2,int[] profondeur,int ope)
+	@Test
+	public final void TestEqualsOperationAddition() {
+		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+		
+		int[] profondeur = new int[3];
+		profondeur[0] = 2;
+		profondeur[1] = 3;
+		profondeur[2] = 3;
+		c.initPronfActuel();
+		c.profondeurActuel[0] = 1;
+		c.profondeurActuel[1] = 1;
+		c.profondeurActuel[2] = 1;
+		assertEquals(c.operationAddition("people_Annéedenaissance", "people_Annéedenaissance", profondeur, 1),"3864");
+	}
 	
 	@Test
-	public final void TestTrueOperationConcatenation() {
+	public final void TestEqualsOperationMultiplication() {
+		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
 		
+		int[] profondeur = new int[3];
+		profondeur[0] = 2;
+		profondeur[1] = 3;
+		profondeur[2] = 3;
+		c.initPronfActuel();
+		c.profondeurActuel[0] = 1;
+		c.profondeurActuel[1] = 1;
+		c.profondeurActuel[2] = 1;
+		assertEquals(c.operationMultiplication("people_Annéedenaissance", "people_Annéedenaissance", profondeur, 1),"3732624");
+	}
+	
+	@Test
+	public final void TestEqualsOperationDivision() {
+		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+		
+		int[] profondeur = new int[3];
+		profondeur[0] = 2;
+		profondeur[1] = 3;
+		profondeur[2] = 3;
+		c.initPronfActuel();
+		c.profondeurActuel[0] = 1;
+		c.profondeurActuel[1] = 1;
+		c.profondeurActuel[2] = 1;
+		assertEquals(c.operationDivision("people_Annéedenaissance", "people_Annéedenaissance", profondeur, 1),"1");
+	}
+	
+	@Test
+	public final void TestEqualsOperationSoustraction() {
+		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+		
+		int[] profondeur = new int[3];
+		profondeur[0] = 2;
+		profondeur[1] = 3;
+		profondeur[2] = 3;
+		c.initPronfActuel();
+		c.profondeurActuel[0] = 1;
+		c.profondeurActuel[1] = 1;
+		c.profondeurActuel[2] = 1;
+		assertEquals(c.operationSoustraction("people_Annéedenaissance", "people_Annéedenaissance", profondeur, 1),"0");
+	}
+	
+	@Test
+	public final void TestEqualsOperationConcatenation() {
+		convertCsvJson c =new convertCsvJson();
+		c.initfichierCSVEtJSON("csv.csv","tmp.JSON");
+		
+		int[] profondeur = new int[3];
+		profondeur[0] = 2;
+		profondeur[1] = 3;
+		profondeur[2] = 3;
+		c.initPronfActuel();
+		c.profondeurActuel[0] = 1;
+		c.profondeurActuel[1] = 1;
+		c.profondeurActuel[2] = 1;
+		assertEquals(c.operationConcatenation("people_Annéedenaissance", "people_Annéedenaissance", profondeur, 1),"19321932");
 	}
 }
