@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>fr.uvsq</groupId>
-  <artifactId>Projet-Convertisseur-</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <artifactId>mon_projet</artifactId>
+  <version>0</version>
   <packaging>jar</packaging>
 
   <name>Projet-Convertisseur-</name>
@@ -12,8 +12,9 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <mainClass>fr.uvsq.Projet_Convertisseur_.App</mainClass>
   </properties>
-
+  
   <dependencies>
   
     <dependency>
@@ -43,31 +44,71 @@
 
   </dependencies>
   
+  <build>
+   <plugins>
+
+
+    <plugin>
+     <artifactId>maven-assembly-plugin</artifactId>
+     <configuration>
+      <descriptors>
+       <descriptor>jar.xml</descriptor>
+      </descriptors>
+      <archive>
+       <manifest>
+        <mainClass>fr.uvsq.Projet_Convertisseur_.App</mainClass>
+       </manifest>
+      </archive>
+     </configuration>
+      <executions>
+          <execution>
+            <id>simple-command</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+    </plugin>
+    
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.1.1</version>
+         <executions>
+          <execution>
+            <id>simple-command</id>
+            <phase>package</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+  
+   </plugins>
+  </build>
+  
 	 <reporting>
       <plugins>
-      
-      <plugin>
- 		<groupId>org.codehaus.mojo</groupId>
- 		 <artifactId>findbugs-maven-plugin</artifactId>
- 		 <version>3.0.4-SNAPSHOT</version>
- 		 <configuration>
-		 <xmlOutput>true</xmlOutput>
-		</configuration>
-	  </plugin>
-	  
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.1.0</version>
+		 <plugin>
+          <groupId> org.apache.maven.plugins </groupId>
+          <artifactId> maven-checkstyle-plugin </artifactId>
+          <version> 3.1.0 </version>
           <reportSets>
             <reportSet>
               <reports>
-                <report>checkstyle</report>
+                <report> checkstyle </report>
               </reports>
             </reportSet>
           </reportSets>
         </plugin>
         
+        <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>3.1.12.3-SNAPSHOT</version>
+      </plugin>
       </plugins>
     </reporting>
   

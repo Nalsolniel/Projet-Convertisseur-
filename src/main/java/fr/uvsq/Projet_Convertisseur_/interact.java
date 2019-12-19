@@ -2,6 +2,8 @@ package fr.uvsq.Projet_Convertisseur_;
 
 import java.util.Scanner;
 
+import org.json.JSONException;
+
 public class interact 
 {
 	int typeFichier;
@@ -17,30 +19,37 @@ public class interact
 	
 	public void Start()
 	{
-		Scanner scan = new Scanner(System.in);
-		while(typeFichier != 49 && typeFichier != 50)
+		try
 		{
-			System.out.println("Quel type de fichier voulez vous convertir ? (1) JSON (2) CSV :");
-			typeFichier = scan.next().charAt(0);
+			Scanner scan = new Scanner(System.in);
+			while(typeFichier != 49 && typeFichier != 50)
+			{
+				System.out.println("Quel type de fichier voulez vous convertir ? (1) JSON (2) CSV :");
+				typeFichier = scan.next().charAt(0);
+			}
+			typeFichier = typeFichier - 48;
+			searchFileName(scan);
+			System.out.println("le fichier de configuration par défaut a été généré, il se nomme conf.txt");
+			while(retour == "")
+			{
+				System.out.println("Entrez le nom du fichier de retour pour lancer la conversion");
+				retour = scan.next();
+			}
+			if(typeFichier == 1)
+			{
+				new convert_JSON_CSV(json,retour);
+			}
+			else
+			{
+				convertCsvJson c1 = new convertCsvJson();
+				c1.initialisation(fileName,retour);
+			}
+			System.out.println("La conversion est terminée et écrite dans le fichier : "+retour);
 		}
-		typeFichier = typeFichier - 48;
-		searchFileName(scan);
-		System.out.println("le fichier de configuration par défaut a été généré, il se nomme conf.txt");
-		while(retour == "")
+		catch(JSONException e)
 		{
-			System.out.println("Entrez le nom du fichier de retour pour lancer la conversion");
-			retour = scan.next();
+			System.out.println("erreur : le fichier json n'est pas corect");
 		}
-		if(typeFichier == 1)
-		{
-			new convert_JSON_CSV(json,retour);
-		}
-		else
-		{
-			convertCsvJson c1 = new convertCsvJson();
-			c1.initialisation(fileName,retour);
-		}
-		System.out.println("La conversion est terminée et écrite dans le fichier : "+retour);
 	}
 	private void searchFileName(Scanner scan)
 	{

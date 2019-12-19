@@ -15,7 +15,7 @@ import org.json.JSONObject;
 public class JSONreader 
 {
 	JSONObject j;
-
+	
 	JSONreader(String name) 
 	{
 		BufferedReader file;
