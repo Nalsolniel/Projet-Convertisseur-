@@ -1,4 +1,0 @@
-menu_popup_menuitem_onclick,menu_popup_menuitem_value,menu_id,menu_value
-CreateNewDoc(),New,file,File
-OpenDoc(),Open,,
-CloseDoc(),Close,,

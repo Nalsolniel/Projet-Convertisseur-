@@ -36,7 +36,7 @@ public class convert_JSON_CSV
 			int i;
 			
 			//création du nom des colonnes du fichier temporaire
-			String[] line = supIndent(ligne1);
+			String[] line = supIndent(ligne1);  
 			
 			//création du fichier csv temporaire et initialisation des colonnes 
 			obj = new ArrayList<String[]>();
@@ -231,11 +231,6 @@ public class convert_JSON_CSV
 					cont++;j++;
 				}
 				pop = chemin.size()-cont;
-				for(j=0;j<(pop);j++)
-				{
-					System.out.println("pop "+chemin.pop());
-
-				}
 				chemin.add(l.get(i).split(" ")[0]);
 			}
 			//affectation d'une valeurs et de ses opérations
@@ -247,14 +242,8 @@ public class convert_JSON_CSV
 					cont++;j++;
 				}
 				pop = chemin.size()-cont;
-				for(j=0;j<(pop);j++)
-				{
-					System.out.println("pop "+chemin.pop());
-
-				}
 				//ajout de la première valeur dans la colonne
 				concat(chemin,l.get(i).split(" ")[2],l.get(i).split(" ")[0],true);
-				System.out.println(chemin);
 				
 				//aplication des operateurs 
 				for(k=3;k<l.get(i).split(" ").length;k=k+2)
@@ -595,7 +584,7 @@ public class convert_JSON_CSV
 			obj.add(new String[obj.get(0).length]);
 		}
 		if(res != -1)
-		{System.out.println(j.getClass());
+		{
 			//ajout d'un JSONObject 
 			if(j instanceof JSONObject)
 			{

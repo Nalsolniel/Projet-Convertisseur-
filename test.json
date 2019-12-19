@@ -1,28 +1,9 @@
-{"Personne": {
-    "Prenom": [
-        "Kevin",
-        "Thibault",
-        "Charles"
-    ],
-    "Telephone": {
-        "Travail": [
-            "6",
-            "30",
-            "0"
-        ],
-        "Fax": [
-            "2",
-            "5"
-        ],
-        "Mobile": [
-            "33",
-            "96",
-            "0"
-        ]
-    },
-    "Nom": [
-        "DUPONT",
-        "MOKERY",
-        "BODERY"
-    ]
-}}
+{
+"formed": 2016,
+ "members": [
+    {
+      "name": "Molecule Man",
+      "age": "29"
+      }
+      ]
+}

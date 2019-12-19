@@ -16,7 +16,7 @@ public class JSONreader
 {
 	JSONObject j;
 	
-	JSONreader(String name) 
+	JSONreader(String name)   
 	{ 
 		BufferedReader file;
 		String str = "";

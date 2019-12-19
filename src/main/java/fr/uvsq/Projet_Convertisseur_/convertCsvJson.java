@@ -344,8 +344,6 @@ public class convertCsvJson {
 			{
 				tabOperationTransition[cpt] = tabOperation[cpt];
 			}
-			System.out.println(profondeur.length);
-			System.out.println(profondeurActuel.length);
 			for(int i=0;i<profondeur.length;i++)
 			{
 				profondeurActuel[i] = 1;
@@ -387,7 +385,6 @@ public class convertCsvJson {
 	
 		public String[] retourneOperandesEtOperation(String line)
 		{
-//			System.out.println(line.split(" ").length);
 			String[] tab = new String[line.split(" ").length-2];
 			
 			boolean operandePresente = false;
@@ -409,17 +406,6 @@ public class convertCsvJson {
 					tab[i] = transi[i+2];
 				}
 			}
-			
-			
-//			for(int i=0;i<tab.length;i++)
-//			{
-//				System.out.println(tab[i]);
-//			}
-			
-			
-			//la dans tab 0 et 2 on a les perandes il faut maintenant recuperer le chemin abolu gace a la list string puis de la
-			//trouver la colonne dans le csv correspondant a ce nom et avec le numero de colonne lire la ligne appropriee 
-			//on met ensuite les val dasn tab 0 et 2 et c'est presque gagne
 			
 			return tab;
 		}
@@ -455,7 +441,6 @@ public class convertCsvJson {
 				else
 				{
 					sVal1 = tab1.substring(1,tab1.length()-1);
-					System.out.println(sVal1);
 					val1 = Integer.parseInt(sVal1); 
 				}
 				if(tab2.charAt(0) != '"' && tab2.charAt(tab2.length()-1) != '"')
@@ -840,7 +825,6 @@ public class convertCsvJson {
 					String line = reader.readLine();
 					
 					all = traitement(reader, line,all,profondeur,estListe,motArray,false);
-					System.out.println(all);
 					
 					reader.close();
 				}
