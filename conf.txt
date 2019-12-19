@@ -1,7 +1,4 @@
-menu : 
--id < id
--value < value
--popup : 
---menuitem : 
----onclick < onclick
----value < value
+members : 
+-name < name
+-age < age
+formed < formed
