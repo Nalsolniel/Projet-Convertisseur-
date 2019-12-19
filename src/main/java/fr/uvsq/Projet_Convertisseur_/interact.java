@@ -37,7 +37,8 @@ public class interact
 		}
 		else
 		{
-			
+			convertCsvJson c1 = new convertCsvJson();
+			c1.initialisation(fileName,retour);
 		}
 		System.out.println("La conversion est terminée et écrite dans le fichier : "+retour);
 	}
@@ -66,6 +67,8 @@ public class interact
 				if(fileName.contains(".csv"))
 				
 				{
+					csvReader c = new csvReader();
+					c.reader(fileName);
 					ok = false;
 				}
 				else

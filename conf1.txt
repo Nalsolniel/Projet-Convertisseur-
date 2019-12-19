@@ -1,0 +1,7 @@
+menu : 
+-id < id
+-value < value | id
+-popup : 
+--menuitem : 
+---value < value | onclick
+---onclick < onclick

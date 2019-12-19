@@ -1,16 +1,16 @@
 {"people": {
     "Prénom": [
-        "AlphonseAlphonseAlphonse",
-        "BéatriceBéatriceBéatrice",
-        "CharlotteCharlotteCharlotte"
+        "Alphonse",
+        "Béatrice",
+        "Charlotte"
     ],
     "Sexe": [
-        "",
+        "G",
         "F"
     ],
     "Annéedenaissance": [
-        "966",
-        "982",
-        "994"
+        "1932",
+        "1964",
+        "1988"
     ]
 }}
